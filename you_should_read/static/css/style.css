@@ -1,0 +1,70 @@
+p {
+  font: 16px 'Raleway', sans-serif; }
+
+a {
+  font: 16px 'Raleway', sans-serif;
+  color: #1abdd6; }
+  a:active, a:hover {
+    color: red;
+    text-decoration: none; }
+
+nav.navbar {
+  background-color: #fd6e6e;
+  margin-bottom: 0;
+  border: 0; }
+  nav.navbar .navbar-brand, nav.navbar li a {
+    color: white !important; }
+  nav.navbar .active a {
+    background-color: #fd5555 !important; }
+  nav.navbar li a:hover {
+    color: black !important; }
+
+.flashes {
+  background-color: #1abdd6;
+  padding: 15px 5px 5px 5px; }
+
+.left-box {
+  background-color: #fae5e5; }
+
+.media-entry, .recommendation {
+  margin-bottom: 15px;
+  border-radius: 5px;
+  padding: 10px; }
+  .media-entry .author, .recommendation .author {
+    font-size: 80%;
+    margin-bottom: 4px; }
+  .media-entry .description, .recommendation .description {
+    clear: both; }
+  .media-entry .length, .media-entry .recommended-by, .recommendation .length, .recommendation .recommended-by {
+    font-size: 100%; }
+  .media-entry .stats, .recommendation .stats {
+    margin-top: 5px;
+    margin-bottom: 30px;
+    padding-left: 0;
+    color: #fd6e6e; }
+    .media-entry .stats div, .recommendation .stats div {
+      padding-right: 0;
+      float: left;
+      display: block;
+      margin-left: 0;
+      margin-right: 7px;
+      font-size: 13px; }
+    .media-entry .stats .avg-rating, .recommendation .stats .avg-rating {
+      margin-right: 35px;
+      margin-left: 0;
+      display: block; }
+    .media-entry .stats .length, .media-entry .stats .submitter, .recommendation .stats .length, .recommendation .stats .submitter {
+      margin-left: 20px; }
+  .media-entry .status, .recommendation .status {
+    margin-top: 25px; }
+    .media-entry .status a, .recommendation .status a {
+      cursor: pointer; }
+  .media-entry .title, .recommendation .title {
+    font-weight: bold;
+    font-size: 22px;
+    margin-bottom: 4px;
+    line-height: 24px; }
+
+.new-recommendation .weight {
+  border: none;
+  box-shadow: none; }

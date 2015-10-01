@@ -1,0 +1,108 @@
+{% macro load_css(filename) %}
+<link rel='stylesheet' href='/css/{{ filename }}.css'>
+{% endmacro %}
+
+{% macro load_js(filename) %}
+<script src='/js/{{ filename }}.js'></script>
+{% endmacro %}
+
+{% macro media_entry(prefix, id, title, author, description, rating,
+                     personal_rating, length=None, live=False,
+                     recommenders=None, status=None) %}
+<div class='media-entry'>
+    <a class='title' href='/media/{{ id }}'>{{ title }}</a>
+    {% if live %}
+        <p class='author' contenteditable>{{ author }}</p>
+    {% else %}
+        <p class='author'>{{ author }}</p>
+    {% endif %}
+    <div class='stats'>
+        <div class='star-rating' id='star-{{ prefix }}-{{ id }}'>
+            <input type='radio' class='rating' value='1' />
+            <input type='radio' class='rating' value='2' />
+            <input type='radio' class='rating' value='3' />
+            <input type='radio' class='rating' value='4' />
+            <input type='radio' class='rating' value='5' />
+        </div>
+        <div class='avg-rating'>{{ rating }}</div>
+    </div>
+    {% if recommenders %}
+        <p class='recommended-by'>Recommended by {{ recommenders }}</p>
+    {% endif %}
+    {% if length %}
+        <p class='length'>Length: {{ length }}</p>
+    {% endif %}
+    {% if live %}
+        <p class='description' contenteditable>{{ description }}</p>
+    {% else %}
+        <p class='description'>{{ description }}</p>
+    {% endif %}
+    {% if status %}
+    <div class='status'>
+        <p>STATUS: {{ status }}</p>
+        {% if status == 'Unread' %}
+            <p><a id='reading'>Start Reading</a></p>
+        {% elif status == 'Ongoing' %}
+            <p><a id='abandon'>Abandon</a>
+            <span class='glyphicon glyphicon-option-vertical'></span>
+            <a id='complete'>Complete</a></p>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% if live %}
+        <script>
+        $(document).ready(function() {
+            init_event_listeners({{ id }});
+        });
+        </script>
+    {% endif %}
+</div>
+<script>
+$(document).ready(function() {
+    var star = $('#star-{{ prefix }}-{{ id }}');
+    star.rating(function(vote, event) {
+        update_rating({{ id }}, vote);
+        location.reload();
+    });
+
+    star.trigger('set.rating', {{ personal_rating }});
+    star.css('cursor', 'pointer');
+});
+</script>
+{% endmacro %}
+
+{% macro recommendation_entry(prefix, id, userid, username, weight,
+                              constant=False) %}
+<div class='recommendation'>
+    <p class='username'>{{ username }}</p>
+    <div class='stats'>
+        <div class='star-rating' id='star-{{ prefix }}-{{ userid }}'>
+            <input type='radio' class='rating' value='1' />
+            <input type='radio' class='rating' value='2' />
+            <input type='radio' class='rating' value='3' />
+            <input type='radio' class='rating' value='4' />
+            <input type='radio' class='rating' value='5' />
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    var star = $('#star-{{ prefix }}-{{ userid }}');
+{% if constant %}
+    star.rating(function(value, event) { });
+
+    star.children().css('pointer-events', 'none');
+    star.css('cursor', 'not-allowed');
+{% else %}
+    star.rating(function(value, event) {
+        update_recommend({{ id }}, {{ userid }}, value)
+        location.reload();
+    });
+
+    star.css('cursor', 'pointer');
+{% endif %}
+    star.trigger('set.rating', {{ weight }});
+});
+</script>
+{% endmacro %}

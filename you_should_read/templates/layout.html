@@ -1,0 +1,94 @@
+{% from "macros.html" import load_css with context %}
+{% from "macros.html" import load_js with context %}
+
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='author' content='Kevin James'>
+  <meta name='description' content='You Should Read | Targeted recommendations from friends!'>
+  <meta name='keywords' content='Kevin,James'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+  <title>You Should Read... {% block title %}{% endblock %}</title>
+
+  {{ load_css('reset') }}
+  {{ load_css('bootstrap-3.3.4.min') }}
+  {{ load_css('rating-0.3.1.min') }}
+  {{ load_css('style') }}
+
+  <link rel='icon' href='/img/favicon.png'>
+
+  {{ load_js('jquery-2.1.4.min') }}
+  {{ load_js('rating-0.3.min') }}
+  {{ load_js('underscore-1.8.3.min') }}
+  {{ load_js('bootstrap-3.3.4.min') }}
+  {{ load_js('you_should_read') }}
+</head>
+
+<body>
+  <nav class='navbar navbar-inverse navbar-static-top' role='navigation'>
+    <div class='navbar-header'>
+      <a class='navbar-brand' href='{% block home_link %}{% endblock %}'>You Should Read...</a>
+    </div>
+
+    <div class='collapse navbar-collapse navbar-ex1-collapse'>
+      <div class='col-lg-6'>
+        <form class='navbar-form' role='search' method='get' action='/search'>
+          <div class='input-group'>
+            <input type='search' class='form-control' placeholder='Search' name='query' value=''>
+            <div class='input-group-btn'>
+              <button type='submit' class='btn btn-success'>
+                <span class='glyphicon glyphicon-search'></span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <ul class='nav navbar-nav'>
+        <li><a class='modal-link' href='#' data-toggle='modal' data-target='#add-media-modal'>Add Media</a></li>
+        {% block toggle_button %}{% endblock %}
+      </ul>
+    </div>
+  </nav>
+
+  {% block content %}{% endblock %}
+
+  <div id='add-media-modal' class='modal' role='dialog'>
+    <div class='modal-dialog'>
+      <div class='modal-content'>
+        <div class='modal-header'>
+          <h1 class='modal-title'>Add Media</h1>
+        </div>
+        <div class='modal-body'>
+          <form role='form' method='post' action='/add'>
+            <div class='form-group'>
+              <label for='title'>Title:</label>
+              <input type='text' class='form-control' id='title' name='title'>
+              <label for='author'>Author (optional):</label>
+              <input type='text' class='form-control' id='author' name='author'>
+              <label for='description'>Description (optional):</label>
+              <textarea rows='6' class='form-control' id='description' name='description'></textarea>
+            </div>
+            <div class='form-group'>
+              <label for='link'>Link:</label>
+              <input type='url' class='form-control' id='link' name='link'>
+            </div>
+            <div class='form-group'>
+              <label for='length'>Length:</label>
+              <select class='form-control' id='length' name='length'>
+                <option value='1'>Short</option>
+                <option value='2'>Medium</option>
+                <option value='3'>Long</option>
+                <option value='4'>Epic</option>
+              </select>
+            </div>
+            <button type='submit' class='btn btn-success'>Add</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

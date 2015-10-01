@@ -1,0 +1,84 @@
+{% from "macros.html" import media_entry with context %}
+{% from "macros.html" import recommendation_entry with context %}
+
+{% extends "layout.html" %}
+
+{% block title %}{{ media.title }}{% endblock %}
+{% block home_link %}/{% endblock %}
+
+{% block content %}
+  <div class='col-lg-7 left-box' id='view-media'>
+    <h2 class='home-head left-header'>{{ media.title }}</h2>
+    {{ media_entry('featured', media.id, media.title, media.author,
+                   media.description, media.rating, media.personal_rating,
+                   length=media.length, live=True, status=media.status) }}
+  </div>
+
+  <div class='col-lg-5 right-box' id='view-media-recommendations'>
+    <h2 class='home-head right-header'>Recommendations</h2>
+
+    <h3 class='right-header'>You've Recommended This To...</h3>
+    {% if not sent %}
+      <div class='recommendation-empty'>
+        <p>No one.</p>
+      </div>
+    {% else %}
+      {% for entry in sent %}
+        {{ recommendation_entry('sent', entry.id, entry.user_id,
+                                entry.username, entry.value) }}
+      {% endfor %}
+    {% endif %}
+    {% if users %}
+      <div class='container-fluid new-recommendation'>
+        <form role='form' method='post' action='/add'>
+          <div class='col-lg-6 form-group'>
+            <label for='user'>User:</label>
+            <select class='form-control' id='user-select' name='user'>
+            {% for user in users %}
+              <option value='{{ user.id }}'>{{ user.name }}</option>
+            {% endfor %}
+            </select>
+          </div>
+
+          <div class='col-lg-6 form-group'>
+            <label for='weight'>Recommendation Weight:</label>
+            <div class='form-control weight'>
+              <div class='star-rating' id='star-new-recommendation'>
+                <input type='radio' class='rating' value='1' />
+                <input type='radio' class='rating' value='2' />
+                <input type='radio' class='rating' value='3' />
+                <input type='radio' class='rating' value='4' />
+                <input type='radio' class='rating' value='5' />
+              </div>
+            </div>
+            <script>
+            $(document).ready(function() {
+                var star = $('#star-new-recommendation');
+                star.rating(function(value, event) {
+                  var sel = $('#user-select')[0];
+
+                  update_recommend({{ media.id }}, sel.options[sel.selectedIndex].value, value)
+                  location.reload();
+                });
+
+                star.css('cursor', 'pointer');
+            });
+            </script>
+          </div>
+        </form>
+      </div>
+    {% endif %}
+
+    <h3 class='right-header'>Recommended to You By...</h3>
+    {% if not received %}
+      <div class='recommendation-empty'>
+        <p>No one.</p>
+      </div>
+    {% else %}
+      {% for entry in received %}
+        {{ recommendation_entry('received', entry.id, entry.user_id,
+                                entry.username, entry.value, constant=True) }}
+      {% endfor %}
+    {% endif %}
+  </div>
+{% endblock %}

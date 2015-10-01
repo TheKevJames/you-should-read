@@ -1,0 +1,118 @@
+$main-dark: darken(#FD6E6E, 5%);
+$main-medium: #FD6E6E;
+$main-light: #FAE5E5;
+$accent-dark: #337ab7;
+$accent-light: #1ABDD6;
+$black: #000000;
+$white: #FFFFFF;
+$red: red;
+
+
+p {
+    font: 16px 'Raleway', sans-serif;
+}
+
+a {
+    font: 16px 'Raleway', sans-serif;
+    color: $accent-light;
+
+    &:active, &:hover {
+        color: $red;
+        text-decoration: none;
+    }
+}
+
+
+nav.navbar {
+    background-color: $main-medium;
+    margin-bottom: 0;
+    border: 0;
+
+    .navbar-brand, li a {
+        color: $white !important;
+    }
+
+    .active a {
+        background-color: $main-dark !important;
+    }
+
+    li a:hover {
+        color: $black !important;
+    }
+}
+
+.flashes {
+    background-color: $accent-light;
+    padding: 15px 5px 5px 5px;
+}
+
+.left-box {
+    background-color: $main-light;
+}
+
+.media-entry, .recommendation {
+    margin-bottom: 15px;
+    border-radius: 5px;
+    padding: 10px;
+
+    .author {
+        font-size: 80%;
+        margin-bottom: 4px;
+    }
+
+    .description {
+        clear: both;
+    }
+
+    .length, .recommended-by {
+        font-size: 100%;
+    }
+
+    .stats {
+        margin-top: 5px;
+        margin-bottom: 30px;
+        padding-left: 0;
+        color: $main-medium;
+
+        div {
+            padding-right: 0;
+            float: left;
+            display: block;
+            margin-left: 0;
+            margin-right: 7px;
+            font-size: 13px;
+        }
+
+        .avg-rating {
+            margin-right: 35px;
+            margin-left: 0;
+            display: block;
+        }
+
+        .length, .submitter {
+            margin-left: 20px;
+        }
+    }
+
+    .status {
+        margin-top: 25px;
+
+        a {
+            cursor: pointer;
+        }
+    }
+
+    .title {
+        font-weight: bold;
+        font-size: 22px;
+        margin-bottom: 4px;
+        line-height: 24px;
+    }
+}
+
+.new-recommendation {
+    .weight {
+        border: none;
+        box-shadow: none;
+    }
+}

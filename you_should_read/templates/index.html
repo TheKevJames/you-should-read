@@ -1,0 +1,59 @@
+{% from "macros.html" import media_entry with context %}
+
+{% extends "layout.html" %}
+
+{% block home_link %}#{% endblock %}
+
+{% block toggle_button %}
+<li>
+    <a class='modal-link' id='toggle-read' href='#'>Hide Read</a>
+</li>
+
+<script>
+var include_read = window.location.href.indexOf('include_read=true') != -1;
+
+$(document).ready(function() {
+    var toggle = !include_read;
+
+    var a = $('#toggle-read');
+    a[0].href = '/?include_read=' + toggle;
+    if (toggle) {
+        a[0].innerHTML = 'Show Read Media';
+    } else {
+        a[0].innerHTML = 'Hide Read Media';
+    }
+});
+</script>
+{% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class='flashes'>
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<div class='col-lg-6 left-box' id='top-rated'>
+    <h2 class='home-head left-header'>Top Rated</h2>
+    {% for entry in top_rated %}
+        {{ media_entry('top-rated', entry.id, entry.title, entry.author,
+                       entry.description, entry.rating,
+                       entry.personal_rating) }}
+    {% endfor %}
+</div>
+
+<div class='col-lg-6 right-box' id='recommended'>
+    <h2 class='home-head right-header'>Recommended For You</h2>
+    <div>
+    {% for entry in recommended %}
+        {{ media_entry('recommended', entry.id, entry.title, entry.author,
+                       entry.description, entry.rating, entry.personal_rating,
+                       recommenders=entry.recommendations) }}
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}
