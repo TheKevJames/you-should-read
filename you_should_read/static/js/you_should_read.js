@@ -53,6 +53,11 @@ var init_event_listeners = function(id) {
         location.reload();
     });
 
+    $('#unabandon').click(function(){
+        update_status(id, STATUS.READING);
+        location.reload();
+    });
+
     $('#abandon').click(function(){
         update_status(id, STATUS.ABANDON);
         location.reload();

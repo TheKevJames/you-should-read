@@ -46,6 +46,8 @@
             <p><a id='abandon'>Abandon</a>
             <span class='glyphicon glyphicon-option-vertical'></span>
             <a id='complete'>Complete</a></p>
+        {% elif status == 'Abandoned' %}
+            <p><a id='unabandon'>Un-abandon</a></p>
         {% endif %}
     </div>
     {% endif %}
