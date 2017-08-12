@@ -1,0 +1,51 @@
+version: 2
+
+jobs:
+  check:
+    docker:
+      # https://github.com/docker-library/python/issues/155
+      # - image: python:3.6.2-alpine3.6
+      - image: python:3.6.2
+    steps:
+      - checkout
+      - run: pip install pre-commit
+      - run: pre-commit run --all-files
+
+  server:
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker build -t server .
+      - deploy:
+          name: push image (hash)
+          command: |
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+            docker tag server "thekevjames/you-should-read-server:${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:8}"
+            docker push "thekevjames/you-should-read-server:${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:8}"
+      - deploy:
+          name: push image (branch)
+          command: |
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+            docker tag server "thekevjames/you-should-read-server:${CIRCLE_BRANCH}"
+            docker push "thekevjames/you-should-read-server:${CIRCLE_BRANCH}"
+      - deploy:
+          name: push image (latest)
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+              docker tag server thekevjames/you-should-read-server:latest
+              docker push thekevjames/you-should-read-server:latest
+            fi
+
+workflows:
+  version: 2
+  check-build-and-deploy:
+    jobs:
+      - check
+
+      - server:
+          context: org-global
+          requires:
+            - check
