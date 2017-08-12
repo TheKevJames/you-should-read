@@ -41,16 +41,18 @@ jobs:
 
   server-deploy:
     docker:
-      - image: docker:17.05.0-ce-git
+      - image: debian:buster-slim
     steps:
+      - run:
+          name: install dependencies
+          command: |
+            apt-get update -qy
+            apt-get install -qy gnupg wget
+            wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
       - checkout
-      - run: apk add --no-cache curl
       - run:
           name: configure Heroku
           command: |
-            mkdir -p /usr/local/lib
-            curl https://cli-assets.heroku.com/branches/stable/heroku-linux-amd64.tar.gz | tar xz -C /usr/local/lib
-
             cat > ~/.netrc << EOF
             machine api.heroku.com
               login ${HEROKU_USER}
@@ -60,8 +62,8 @@ jobs:
           name: push image to heroku
           command: |
             cd server/
-            /usr/local/lib/heroku/bin/heroku container:login
-            /usr/local/lib/heroku/bin/heroku container:push --app you-should-read server
+            heroku container:login
+            heroku container:push --app you-should-read server
 
 workflows:
   version: 2
