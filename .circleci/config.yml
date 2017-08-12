@@ -56,11 +56,11 @@ jobs:
               login ${HEROKU_USER}
               password ${HEROKU_API_KEY}
             EOF
-      - deploy: heroku container:login
       - deploy:
           name: push image to heroku
           command: |
             cd /server
+            heroku container:login
             heroku container:push --app you-should-read server
 
 workflows:
