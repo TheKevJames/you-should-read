@@ -63,12 +63,13 @@ jobs:
               password ${HEROKU_API_KEY}
             EOF
       - setup_remote_docker
+      # TODO: deploy as worker?
       - deploy:
           name: push image to Heroku
           command: |
             cd server/
             heroku container:login
-            heroku container:push --app you-should-read server
+            heroku container:push --app you-should-read web
 
 workflows:
   version: 2
