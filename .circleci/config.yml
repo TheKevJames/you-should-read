@@ -41,13 +41,17 @@ jobs:
 
   server-deploy:
     docker:
-      - image: debian:buster-slim
+      - image: debian:stretch-slim
     steps:
       - run:
           name: install dependencies
           command: |
             apt-get update -qy
-            apt-get install -qy gnupg wget
+            apt-get install -qy apt-transport-https ca-certificates curl gnupg2 software-properties-common wget
+            curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+            add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+            apt-get update -qy
+            apt-get install -qy docker-ce
             wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
       - checkout
       - run:
@@ -60,7 +64,7 @@ jobs:
             EOF
       - setup_remote_docker
       - deploy:
-          name: push image to heroku
+          name: push image to Heroku
           command: |
             cd server/
             heroku container:login
