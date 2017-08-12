@@ -11,8 +11,7 @@ YouShouldRead
     :alt: Documentation Status
     :target: https://youshouldread.readthedocs.io/en/latest
 
-.. |uptime| image:: https://img.shields.io/uptimerobot/ratio/7/m779314084-c8169da99e52393100a228f2
-.svg?style=flat-square
+.. |uptime| image:: https://img.shields.io/uptimerobot/ratio/7/m779314084-c8169da99e52393100a228f2.svg?style=flat-square
     :alt: Deployment Uptime
     :target: https://youshouldread.thekev.in
 
