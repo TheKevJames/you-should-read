@@ -39,6 +39,30 @@ jobs:
               docker push thekevjames/you-should-read-server:latest
             fi
 
+  server-deploy:
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - run:
+          name: configure Heroku
+          command: |
+            wget https://cli-assets.heroku.com/branches/stable/heroku-linux-amd64.tar.gz
+            mkdir -p /usr/local/lib /usr/local/bin
+            tar -xvzf heroku-linux-amd64.tar.gz -C /usr/local/lib
+            ln -s /usr/local/lib/heroku/bin/heroku /usr/local/bin/heroku
+
+            cat > ~/.netrc << EOF
+            machine api.heroku.com
+              login ${HEROKU_USER}
+              password ${HEROKU_API_KEY}
+            EOF
+      - deploy: heroku container:login
+      - deploy:
+          name: push image to heroku
+          command: |
+            cd /server
+            heroku container:push --app you-should-read server
+
 workflows:
   version: 2
   check-build-and-deploy:
@@ -49,3 +73,11 @@ workflows:
           context: org-global
           requires:
             - check
+
+      - server-deploy:
+          context: org-global
+          filters:
+            branches:
+              only: master
+          requires:
+            - server
