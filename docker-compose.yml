@@ -1,0 +1,8 @@
+version: '3.2'
+
+services:
+  server:
+    build: server/
+    image: thekevjames/you-should-read-server:latest
+    ports:
+      - "8080:80"

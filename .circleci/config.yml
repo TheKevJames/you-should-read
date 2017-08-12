@@ -17,7 +17,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: docker build -t server .
+      - run: docker build -t server server/
       - deploy:
           name: push image (hash)
           command: |
