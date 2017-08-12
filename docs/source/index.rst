@@ -8,7 +8,6 @@ Welcome to YouShouldRead's documentation!
    server/index
 
 
-
 Indices and tables
 ==================
 

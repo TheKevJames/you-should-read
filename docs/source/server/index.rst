@@ -1,4 +1,6 @@
 Server
 ======
 
-TODO
+.. toctree::
+
+    api/index
