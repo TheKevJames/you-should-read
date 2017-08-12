@@ -1,7 +1,7 @@
 YouShouldRead
 =============
 
-|ci| |docs| |isup| |version|
+|ci| |docs| |uptime| |version|
 
 .. |ci| image:: https://img.shields.io/circleci/project/github/TheKevJames/you-should-read/master.svg?style=flat-square
     :alt: CI Status
@@ -11,8 +11,9 @@ YouShouldRead
     :alt: Documentation Status
     :target: https://youshouldread.readthedocs.io/en/latest
 
-.. |isup| image:: https://img.shields.io/website-up-down-green-red/https/youshouldread.thekev.in.svg?style=flat-square&label=youshouldread.thekev.in
-    :alt: Website Status
+.. |uptime| image:: https://img.shields.io/uptimerobot/ratio/7/m779314084-c8169da99e52393100a228f2
+.svg?style=flat-square
+    :alt: Deployment Uptime
     :target: https://youshouldread.thekev.in
 
 .. |version| image:: https://img.shields.io/github/release/TheKevJames/you-should-read.svg?style=flat-square
