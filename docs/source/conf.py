@@ -12,6 +12,7 @@ extensions = [
     'sphinx.ext.imgmath',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
+    'sphinxcontrib.napoleon',
 ]
 
 templates_path = ['_templates']

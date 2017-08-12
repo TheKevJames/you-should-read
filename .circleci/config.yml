@@ -16,7 +16,7 @@ jobs:
       - image: python:3.6.2-alpine3.6
     steps:
       - run: apk add --no-cache make
-      - run: python -m pip install sphinx
+      - run: python -m pip install sphinx sphinxcontrib-napoleon
       - checkout
       - run: make -C docs html
 
