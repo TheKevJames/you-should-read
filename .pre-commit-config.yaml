@@ -27,3 +27,4 @@
         - -d locally-disabled
         - -d missing-docstring
         - -d W0406
+        - -d cyclic-import
