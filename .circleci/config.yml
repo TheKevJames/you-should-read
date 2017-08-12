@@ -58,6 +58,7 @@ jobs:
               login ${HEROKU_USER}
               password ${HEROKU_API_KEY}
             EOF
+      - setup_remote_docker
       - deploy:
           name: push image to heroku
           command: |
