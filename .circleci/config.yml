@@ -48,7 +48,7 @@ jobs:
           name: configure Heroku
           command: |
             mkdir -p /usr/local/lib /usr/local/bin
-            curl https://cli-assets.heroku.com/branches/stable/heroku-linux-amd64.tar.gz | tar xvz -C /usr/local/lib
+            curl https://cli-assets.heroku.com/branches/stable/heroku-linux-amd64.tar.gz | tar xz -C /usr/local/lib
             ln -s /usr/local/lib/heroku/bin/heroku /usr/local/bin/heroku
 
             cat > ~/.netrc << EOF
@@ -59,7 +59,7 @@ jobs:
       - deploy:
           name: push image to heroku
           command: |
-            cd /server
+            cd server/
             heroku container:login
             heroku container:push --app you-should-read server
 
