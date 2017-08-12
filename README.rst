@@ -7,9 +7,9 @@ YouShouldRead
     :alt: CI Status
     :target: https://circleci.com/gh/TheKevJames/you-should-read/tree/master
 
-.. |docs| image:: https://readthedocs.org/projects/youshouldread/badge/?style=flat-square&version=latest
+.. |docs| image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat-square
     :alt: Documentation Status
-    :target: https://youshouldread.readthedocs.io/en/latest/?badge=latest
+    :target: https://youshouldread.readthedocs.io/en/latest
 
 .. |isup| image:: https://img.shields.io/website-up-down-green-red/https/youshouldread.thekev.in.svg?style=flat-square&label=youshouldread.thekev.in
     :alt: Website Status
