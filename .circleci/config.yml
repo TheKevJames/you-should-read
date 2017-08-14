@@ -91,7 +91,7 @@ jobs:
       - run:
           name: get database connection
           command: |
-            echo "export DATABASE_URL=$(heroku pg:credentials:url --app you-should-read | tail -n1 | sed -E 's/[[:space:]]+postgres/pg/')" >> ${BASH_ENV}"
+            echo "export DATABASE_URL=$(heroku pg:credentials:url --app you-should-read | tail -n1 | sed -E 's/[[:space:]]+postgres/pg/')" >> ${BASH_ENV}
       - deploy:
           name: apply migrations
           command: |
