@@ -1,0 +1,7 @@
+%syntax-version=1.0.0
+%project=you-should-read
+%uri=https://github.com/TheKevJames/you-should-read
+
+appschema 2017-08-14T00:30:16Z root <root@a5b75bc13b0d> # create schema
+updated_at_fn [appschema] 2017-08-14T02:33:19Z root <root@moby> # create updated_at updater function
+add_table_user [updated_at_fn] 2017-08-14T02:34:39Z root <root@moby> # create user table

@@ -18,3 +18,15 @@ YouShouldRead
 .. |version| image:: https://img.shields.io/github/release/TheKevJames/you-should-read.svg?style=flat-square
     :alt: Version
     :target: https://github.com/TheKevJames/you-should-read/releases/latest
+
+Development
+-----------
+
+To build and run YouShouldRead for local development, run
+
+    docker-compose up --build
+
+To apply database migrations, we use [sqitch](http://sqitch.org/)
+
+    cd database/
+    sqitch deploy

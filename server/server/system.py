@@ -1,5 +1,4 @@
-from sanic.exceptions import ServerError
-from sanic.response import json, text
+import sanic
 
 from . import app
 
@@ -8,7 +7,7 @@ from . import app
 async def ping(_request):
     """Simple healthcheck.
     """
-    return text('pong')
+    return sanic.response.text('pong')
 
 
 @app.route('/doctest/<version:int>')
@@ -38,12 +37,13 @@ async def doctest(request, version):
         * Do stuff
     """
     if version != 1:
-        raise ServerError('unsupported version {} != 1'.format(version), 500)
+        raise sanic.exceptions.ServerError(
+            'unsupported version {} != 1'.format(version), 500)
 
     if request.args.get('succeed') != 'yes':
-        raise ServerError('did not send ?succeed=yes', 500)
+        raise sanic.exceptions.ServerError('did not send ?succeed=yes', 500)
 
     if 3 + 5 < 9 ** 2:
-        return json({'success': True, 'body': request.json})
+        return sanic.response.json({'success': True, 'body': request.json})
     else:
-        raise ServerError('the universe is broken', 500)
+        raise sanic.exceptions.ServerError('the universe is broken', 500)

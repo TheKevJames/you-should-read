@@ -20,6 +20,25 @@ jobs:
       - checkout
       - run: make -C docs html
 
+  database:
+    docker:
+      - image: debian:stretch-slim
+      - image: postgres:9.6.2-alpine
+    steps:
+      - run:
+          name: install dependencies
+          command: |
+            # https://github.com/resin-io-library/base-images/issues/273
+            mkdir -p /usr/share/man/man1 /usr/share/man/man7
+            apt-get update -qy
+            apt-get install -qy sqitch
+      - checkout
+      - run:
+          name: verify migrations
+          command: |
+            cd database/
+            sqitch deploy --verify
+
   server:
     docker:
       - image: docker:17.05.0-ce-git
@@ -48,6 +67,37 @@ jobs:
               docker push thekevjames/you-should-read-server:latest
             fi
 
+  database-deploy:
+    docker:
+      - image: debian:stretch-slim
+    steps:
+      - run:
+          name: install dependencies
+          command: |
+            # https://github.com/resin-io-library/base-images/issues/273
+            mkdir -p /usr/share/man/man1 /usr/share/man/man7
+            apt-get update -qy
+            apt-get install -qy apt-transport-https ca-certificates gnupg2 software-properties-common sqitch wget
+            wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+      - run:
+          name: configure Heroku
+          command: |
+            cat > ~/.netrc << EOF
+            machine api.heroku.com
+              login ${HEROKU_USER}
+              password ${HEROKU_API_KEY}
+            EOF
+      - checkout
+      - run:
+          name: get database connection
+          command: |
+            echo "export DATABASE_URL=$(heroku pg:credentials:url --app you-should-read | tail -n1 | sed -E 's/[[:space:]]+postgres/pg/')" >> ${BASH_ENV}"
+      - deploy:
+          name: apply migrations
+          command: |
+            cd database/
+            sqitch deploy --verify db:${DATABASE_URL}
+
   server-deploy:
     docker:
       - image: debian:stretch-slim
@@ -62,7 +112,6 @@ jobs:
             apt-get update -qy
             apt-get install -qy docker-ce
             wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
-      - checkout
       - run:
           name: configure Heroku
           command: |
@@ -71,6 +120,7 @@ jobs:
               login ${HEROKU_USER}
               password ${HEROKU_API_KEY}
             EOF
+      - checkout
       - setup_remote_docker
       # TODO: deploy as worker?
       - deploy:
@@ -107,6 +157,13 @@ workflows:
             tags:
               only: /.*/
 
+      - database:
+          context: org-global
+          filters:
+            tags:
+              only: /.*/
+          requires:
+            - check
       - server:
           context: org-global
           filters:
@@ -115,6 +172,15 @@ workflows:
           requires:
             - check
 
+      - database-deploy:
+          context: org-global
+          filters:
+            branches:
+              only: master
+            tags:
+              only: /.*/
+          requires:
+            - database
       - server-deploy:
           context: org-global
           filters:
