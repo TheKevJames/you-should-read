@@ -136,3 +136,12 @@ class User(sanic.views.HTTPMethodView):
 
 user.add_route(UserList.as_view(), '/')
 user.add_route(User.as_view(), '/<uid:int>')
+# TODO:
+# /user/<uid>/rating
+# /user/<uid>/rating/<rtid>
+# /user/<uid>/bookmark
+# /user/<uid>/bookmark/<bmid>
+# /user/<uid>/recommendation-send
+# /user/<uid>/recommendation-send/<rid>
+# /user/<uid>/recommendation-receive
+# /user/<uid>/recommendation-receive/<rid>

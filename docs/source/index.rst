@@ -1,16 +1,19 @@
-Welcome to YouShouldRead's documentation!
-===========================================
+YouShouldRead
+=============
+
+YouShouldRead is a media management and recommendation system. These are its
+dev decs.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
+   database/index
    server/index
 
 
-Indices and tables
-==================
+Indices
+=======
 
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
