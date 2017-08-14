@@ -22,11 +22,11 @@ YouShouldRead
 Development
 -----------
 
-To build and run YouShouldRead for local development, run
+To build and run YouShouldRead for local development, run::
 
     docker-compose up --build
 
-To apply database migrations, we use [sqitch](http://sqitch.org/)
+To apply database migrations, we use [sqitch](http://sqitch.org/)::
 
     cd database/
     sqitch deploy
