@@ -26,7 +26,10 @@ To build and run YouShouldRead for local development, run::
 
     docker-compose up --build
 
-To apply database migrations, we use [sqitch](http://sqitch.org/)::
+To apply database migrations, we use `sqitch`_. To update your local database to
+the most recent version, run::
 
     cd database/
     sqitch deploy
+
+.. _`sqitch`: http://sqitch.org/
