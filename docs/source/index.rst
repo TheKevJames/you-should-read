@@ -2,7 +2,7 @@ YouShouldRead
 =============
 
 YouShouldRead is a media management and recommendation system. These are its
-dev decs.
+developer docs.
 
 .. toctree::
    :maxdepth: 3

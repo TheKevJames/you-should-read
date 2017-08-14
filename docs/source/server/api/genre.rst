@@ -2,3 +2,4 @@
 ===================
 .. automodule:: server.genre
     :members:
+    :undoc-members:

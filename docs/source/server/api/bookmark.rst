@@ -2,3 +2,4 @@
 ======================
 .. automodule:: server.bookmark
     :members:
+    :undoc-members:

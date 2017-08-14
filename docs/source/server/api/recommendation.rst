@@ -2,3 +2,4 @@
 ============================
 .. automodule:: server.recommendation
     :members:
+    :undoc-members:

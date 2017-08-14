@@ -2,3 +2,4 @@
 ===================
 .. automodule:: server.media
     :members:
+    :undoc-members:

@@ -2,3 +2,4 @@
 ====================
 .. automodule:: server.system
     :members:
+    :undoc-members:

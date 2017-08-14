@@ -11,8 +11,6 @@ class UserList(sanic.views.HTTPMethodView):
     async def get(self, _request):
         """Get all users.
 
-        Returns the entire user table.
-
         Returns:
             A list of JSON blobs containing each user's data. Each item has the
             following format::
@@ -30,8 +28,6 @@ class UserList(sanic.views.HTTPMethodView):
 
     async def post(self, request):
         """Create a user.
-
-        Creates a user from a JSON payload.
 
         Args:
             request.json['name'] (str): Name of new user.
@@ -61,8 +57,6 @@ class User(sanic.views.HTTPMethodView):
     async def delete(self, request, uid):
         """Delete a single user.
 
-        Deletes a user object.
-
         Returns:
             null
 
@@ -77,8 +71,6 @@ class User(sanic.views.HTTPMethodView):
 
     async def get(self, _request, uid):
         """Get a single user.
-
-        Returns a user object.
 
         Returns:
             A JSON blob containing a single user's data of the following
@@ -103,8 +95,6 @@ class User(sanic.views.HTTPMethodView):
 
     async def patch(self, request, uid):
         """Update a single user.
-
-        Updates a user's attributes.
 
         Args:
             request.json['name'] (str, optional): New name for user.
