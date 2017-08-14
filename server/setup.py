@@ -8,5 +8,5 @@ setuptools.setup(
     author_email='KevinJames@thekev.in',
     url='https://github.com/TheKevJames/you-should-read.git',
     packages=setuptools.find_packages(),
-    install_requires=['sanic'],
+    install_requires=['asyncpg', 'sanic'],
 )
