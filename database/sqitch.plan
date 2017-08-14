@@ -5,3 +5,9 @@
 appschema 2017-08-14T00:30:16Z root <root@a5b75bc13b0d> # create schema
 updated_at_fn [appschema] 2017-08-14T02:33:19Z root <root@moby> # create updated_at updater function
 add_table_user [updated_at_fn] 2017-08-14T02:34:39Z root <root@moby> # create user table
+add_table_media [updated_at_fn] 2017-08-14T07:16:46Z Kevin James <kevin@atomicbox.local> # create media table
+add_table_genre [updated_at_fn] 2017-08-14T07:22:29Z Kevin James <kevin@atomicbox.local> # create genre table
+add_table_media_genre [updated_at_fn add_table_media add_table_genre] 2017-08-14T07:23:57Z Kevin James <kevin@atomicbox.local> # create media<->genre table
+add_table_rating [updated_at_fn add_table_media add_table_user] 2017-08-14T07:26:32Z Kevin James <kevin@atomicbox.local> # create rating table
+add_table_bookmark [updated_at_fn add_table_media add_table_user] 2017-08-14T07:29:28Z Kevin James <kevin@atomicbox.local> # create bookmark table
+add_table_recommendation [updated_at_fn add_table_media add_table_user] 2017-08-14T07:31:44Z Kevin James <kevin@atomicbox.local> # create recommendation table
