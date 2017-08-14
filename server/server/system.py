@@ -26,9 +26,9 @@ async def doctest(request, version):
         version: The version of the function to call. Only version 1 works.
 
     Returns:
-        A json blob containing a success key and your input data.
+        A json blob containing a success key and your input data::
 
-        {'success': True, 'body': request.json}
+            {'success': True, 'body': request.json}
 
     Raises:
         ServerError: An error occurred or inputs were incorrect.
