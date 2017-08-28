@@ -11,15 +11,6 @@ jobs:
       - run: python -m pip install pre-commit
       - run: pre-commit run --all-files
 
-  docs:
-    docker:
-      - image: python:3.6.2-alpine3.6
-    steps:
-      - run: apk add --no-cache make
-      - run: python -m pip install sphinx sphinxcontrib-napoleon
-      - checkout
-      - run: make -C docs html
-
   database:
     docker:
       - image: debian:stretch-slim
@@ -149,10 +140,6 @@ workflows:
   check-build-and-deploy:
     jobs:
       - check:
-          filters:
-            tags:
-              only: /.*/
-      - docs:
           filters:
             tags:
               only: /.*/
