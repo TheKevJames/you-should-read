@@ -2,12 +2,10 @@ import asyncpg
 import sanic
 
 from server.config import DATABASE_URL
+from server.view import BaseView
 
 
-user = sanic.Blueprint('user', url_prefix='/user')
-
-
-class UserList(sanic.views.HTTPMethodView):
+class UserList(BaseView):
     async def get(self, _request):
         """Get all users.
 
@@ -38,12 +36,9 @@ class UserList(sanic.views.HTTPMethodView):
                 {'id': 42}
 
         Raises:
-            InvalidUsage(400): A name was not provided.
+            InvalidUsage(400): A required argument was not provided.
         """
-        try:
-            name = request.json['name']
-        except KeyError:
-            raise sanic.exceptions.InvalidUsage('missing name field')
+        name = self.get_field(request, 'name')
 
         conn = await asyncpg.connect(dsn=DATABASE_URL)
         uid = await conn.fetchval(
@@ -53,7 +48,7 @@ class UserList(sanic.views.HTTPMethodView):
         return sanic.response.json({'id': uid}, status=201)
 
 
-class User(sanic.views.HTTPMethodView):
+class User(BaseView):
     async def delete(self, request, uid):
         """Delete a single user.
 
@@ -88,6 +83,7 @@ class User(sanic.views.HTTPMethodView):
         """
         conn = await asyncpg.connect(dsn=DATABASE_URL)
         rows = await conn.fetch('SELECT * FROM ysr.user WHERE id=$1', uid)
+
         try:
             return sanic.response.json(dict(rows[0]))
         except IndexError:
@@ -105,17 +101,20 @@ class User(sanic.views.HTTPMethodView):
 
                 {
                     'id': 42,
-                    'name': 'Billy Bob',
+                    'name': 'Billie Bob',
                     'created_at': 1502680672,
                     'updated_at': 1502680672
                 }
 
         Raises:
             NotFound(404): The user does not exist.
+
+        TODO:
+            Raise exception when no patch body is provided.
         """
         current = await self.get(request, uid)
 
-        name = request.json.get('name', current['name'])
+        name = self.get_field(request, 'name', default=current['name'])
 
         conn = await asyncpg.connect(dsn=DATABASE_URL)
         await conn.execute('UPDATE ysr.user SET name=$1 WHERE id=$2', name,
@@ -124,6 +123,7 @@ class User(sanic.views.HTTPMethodView):
         return await self.get(request, uid)
 
 
+user = sanic.Blueprint('user', url_prefix='/user')
 user.add_route(UserList.as_view(), '/')
 user.add_route(User.as_view(), '/<uid:int>')
 # TODO:

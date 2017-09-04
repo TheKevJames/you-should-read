@@ -6,6 +6,7 @@ The YouShouldRead server is a RESTful project built with `Sanic`_.
 .. toctree::
 
     api/index
+    backend/index
 
 
-.. _`Sanic`: https://github.com/channelcat/sanic
+.. _Sanic: https://github.com/channelcat/sanic

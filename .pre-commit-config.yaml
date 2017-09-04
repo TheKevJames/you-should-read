@@ -26,5 +26,6 @@
         - -d invalid-name
         - -d locally-disabled
         - -d missing-docstring
-        - -d W0406
-        - -d cyclic-import
+        - -d W0406  # TODO: refactor server imports
+        - -d cyclic-import  # TODO: refactor server imports
+        - -d duplicate-code  # TODO: abstract view methods
