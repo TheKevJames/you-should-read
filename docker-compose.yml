@@ -1,7 +1,7 @@
 version: '3.2'
 
 services:
-  client:
+  ysr_client:
     image: thekevjames/you-should-read-client:latest
     deploy:
       mode: replicated
@@ -14,7 +14,7 @@ services:
         parallelism: 1
         monitor: 20s
 
-  server:
+  ysr_server:
     image: thekevjames/you-should-read-server:latest
     deploy:
       mode: replicated
