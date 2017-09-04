@@ -1,0 +1,11 @@
+[ignore]
+.*/node_modules/babel-plugin-transform-react-remove-prop-types/src/*
+
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
