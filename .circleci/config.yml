@@ -114,34 +114,14 @@ jobs:
 
   client-deploy:
     docker:
-      - image: debian:stretch-slim
+      - image: docker:17.05.0-ce-git
     steps:
-      - run:
-          name: install dependencies
-          command: |
-            apt-get update -qy
-            apt-get install -qy apt-transport-https ca-certificates curl gnupg2 software-properties-common wget
-            curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-            add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-            apt-get update -qy
-            apt-get install -qy docker-ce
-            wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
-      - run:
-          name: configure Heroku
-          command: |
-            cat > ~/.netrc << EOF
-            machine api.heroku.com
-              login ${HEROKU_USER}
-              password ${HEROKU_API_KEY}
-            EOF
-      - checkout
-      - setup_remote_docker
       - deploy:
-          name: push image to Heroku
+          name: deploy client image
           command: |
-            cd client/
-            heroku container:login
-            heroku container:push --app you-should-read web
+            ssh -oStrictHostKeyChecking=no ubuntu@thekev.in "
+              docker service update --image thekevjames/you-should-read-client:latest ysr_client
+            "
 
   database-deploy:
     docker:
@@ -176,34 +156,14 @@ jobs:
 
   server-deploy:
     docker:
-      - image: debian:stretch-slim
+      - image: docker:17.05.0-ce-git
     steps:
-      - run:
-          name: install dependencies
-          command: |
-            apt-get update -qy
-            apt-get install -qy apt-transport-https ca-certificates curl gnupg2 software-properties-common wget
-            curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-            add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-            apt-get update -qy
-            apt-get install -qy docker-ce
-            wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
-      - run:
-          name: configure Heroku
-          command: |
-            cat > ~/.netrc << EOF
-            machine api.heroku.com
-              login ${HEROKU_USER}
-              password ${HEROKU_API_KEY}
-            EOF
-      - checkout
-      - setup_remote_docker
       - deploy:
-          name: push image to Heroku
+          name: deploy server image
           command: |
-            cd server/
-            heroku container:login
-            heroku container:push --app you-should-read worker
+            ssh -oStrictHostKeyChecking=no ubuntu@thekev.in "
+              docker service update --image thekevjames/you-should-read-server:latest ysr_server
+            "
 
   github-release:
     docker:
