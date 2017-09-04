@@ -5,7 +5,6 @@ import sys
 sys.path.insert(0, os.path.abspath('../../server'))
 
 
-# -- General configuration ------------------------------------------------
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.githubpages',
@@ -34,3 +33,7 @@ exclude_patterns = []
 pygments_style = 'sphinx'
 
 todo_include_todos = True
+
+intersphinx_mapping = {
+    'sanic': ('http://sanic.readthedocs.io/en/latest/', None),
+}
