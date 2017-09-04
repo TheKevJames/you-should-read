@@ -120,7 +120,7 @@ jobs:
           name: deploy client image
           command: |
             ssh -oStrictHostKeyChecking=no ubuntu@thekev.in "
-              docker service update --image thekevjames/you-should-read-client:latest ysr_client
+              docker service update --image thekevjames/you-should-read-client:latest thekevjames_ysr_client
             "
 
   database-deploy:
@@ -162,7 +162,7 @@ jobs:
           name: deploy server image
           command: |
             ssh -oStrictHostKeyChecking=no ubuntu@thekev.in "
-              docker service update --image thekevjames/you-should-read-server:latest ysr_server
+              docker service update --image thekevjames/you-should-read-server:latest thekevjames_ysr_server
             "
 
   github-release:
