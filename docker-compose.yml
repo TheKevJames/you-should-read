@@ -1,6 +1,11 @@
 version: '3.2'
 
 services:
+  client:
+    build: client/
+    ports:
+      - "8080:4000"
+
   database:
     image: postgres:9.6.2-alpine
     ports:
@@ -9,4 +14,4 @@ services:
   server:
     build: server/
     ports:
-      - "8080:80"
+      - "8081:80"

@@ -1,6 +1,6 @@
 **/*.egg-info/*
 **/__pycache__/*
+*/__snapshots__/*
+client/dist/*
 client/node_modules/*
 venv/*
-client/dist/*
-*/__snapshots__/*

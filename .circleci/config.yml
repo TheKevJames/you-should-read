@@ -11,6 +11,60 @@ jobs:
       - run: python -m pip install pre-commit
       - run: pre-commit run --all-files
 
+  client-test:
+    docker:
+      - image: node:8.4.0
+    steps:
+      - checkout
+      - run:
+          name: npm install
+          command: |
+            cd client/
+            npm install
+      - run:
+          name: npm run lint
+          command: |
+            cd client/
+            npm run lint
+      - run:
+          name: npm run flow
+          command: |
+            cd client/
+            npm run flow
+      - run:
+          name: npm run test
+          command: |
+            cd client/
+            npm run test
+
+  client-image:
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker build -t client client/
+      - deploy:
+          name: push image (hash)
+          command: |
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+            docker tag client "thekevjames/you-should-read-client:${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:8}"
+            docker push "thekevjames/you-should-read-client:${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:8}"
+      - deploy:
+          name: push image (branch)
+          command: |
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+            docker tag client "thekevjames/you-should-read-client:${CIRCLE_BRANCH}"
+            docker push "thekevjames/you-should-read-client:${CIRCLE_BRANCH}"
+      - deploy:
+          name: push image (latest)
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+              docker tag client thekevjames/you-should-read-client:latest
+              docker push thekevjames/you-should-read-client:latest
+            fi
+
   database:
     docker:
       - image: debian:stretch-slim
@@ -30,7 +84,7 @@ jobs:
             cd database/
             sqitch deploy --verify
 
-  server:
+  server-image:
     docker:
       - image: docker:17.05.0-ce-git
     steps:
@@ -57,6 +111,37 @@ jobs:
               docker tag server thekevjames/you-should-read-server:latest
               docker push thekevjames/you-should-read-server:latest
             fi
+
+  client-deploy:
+    docker:
+      - image: debian:stretch-slim
+    steps:
+      - run:
+          name: install dependencies
+          command: |
+            apt-get update -qy
+            apt-get install -qy apt-transport-https ca-certificates curl gnupg2 software-properties-common wget
+            curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+            add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+            apt-get update -qy
+            apt-get install -qy docker-ce
+            wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+      - run:
+          name: configure Heroku
+          command: |
+            cat > ~/.netrc << EOF
+            machine api.heroku.com
+              login ${HEROKU_USER}
+              password ${HEROKU_API_KEY}
+            EOF
+      - checkout
+      - setup_remote_docker
+      - deploy:
+          name: push image to Heroku
+          command: |
+            cd client/
+            heroku container:login
+            heroku container:push --app you-should-read web
 
   database-deploy:
     docker:
@@ -113,13 +198,12 @@ jobs:
             EOF
       - checkout
       - setup_remote_docker
-      # TODO: deploy as worker?
       - deploy:
           name: push image to Heroku
           command: |
             cd server/
             heroku container:login
-            heroku container:push --app you-should-read web
+            heroku container:push --app you-should-read worker
 
   github-release:
     docker:
@@ -144,6 +228,29 @@ workflows:
             tags:
               only: /.*/
 
+      - client-test:
+          filters:
+            tags:
+              only: /.*/
+          requires:
+            - check
+      - client-image:
+          context: org-global
+          filters:
+            tags:
+              only: /.*/
+          requires:
+            - client-test
+      - client-deploy:
+          context: org-global
+          filters:
+            branches:
+              only: master
+            tags:
+              only: /.*/
+          requires:
+            - client-image
+
       - database:
           context: org-global
           filters:
@@ -151,14 +258,6 @@ workflows:
               only: /.*/
           requires:
             - check
-      - server:
-          context: org-global
-          filters:
-            tags:
-              only: /.*/
-          requires:
-            - check
-
       - database-deploy:
           context: org-global
           filters:
@@ -168,6 +267,14 @@ workflows:
               only: /.*/
           requires:
             - database
+
+      - server-image:
+          context: org-global
+          filters:
+            tags:
+              only: /.*/
+          requires:
+            - check
       - server-deploy:
           context: org-global
           filters:
@@ -176,7 +283,7 @@ workflows:
             tags:
               only: /.*/
           requires:
-            - server
+            - server-image
 
       - github-release:
           context: org-global

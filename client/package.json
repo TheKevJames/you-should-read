@@ -6,25 +6,15 @@
     "npm": ">=3"
   },
   "scripts": {
-    "preinstall": "node tools/nodeVersionCheck.js",
-    "start-message": "babel-node tools/startMessage.js",
-    "prestart": "npm-run-all --parallel start-message",
-    "start": "npm-run-all --parallel test:watch open:src lint:watch",
-    "open:src": "babel-node tools/srcServer.js",
-    "open:dist": "babel-node tools/distServer.js",
+    "build-prod": "babel-node tools/build.js",
+    "build-dev": "npm-run-all --parallel start-dev",
+    "start-prod": "babel-node tools/distServer.js",
+    "start-dev": "babel-node tools/srcServer.js",
     "lint": "esw webpack.config.* src tools --color",
-    "lint:watch": "npm run lint -- --watch",
-    "clean-dist": "npm run remove-dist && mkdir dist",
-    "remove-dist": "rimraf ./dist",
+    "clean-dist": "rimraf ./dist && mkdir dist",
     "prebuild": "npm run clean-dist && npm run lint && npm run test",
-    "build": "babel-node tools/build.js && npm run open:dist",
     "test": "jest",
-    "test:CI": "babel-node tools/testCi.js",
-    "test:cover": "npm run test -- --coverage ",
-    "test:cover:CI": "npm run test:CI -- --coverage && cat ./coverage/lcov.info | node_modules/coveralls/bin/coveralls.js",
-    "test:watch": "npm run test -- --watch",
-    "open:cover": "npm run test:cover && opn ./coverage/lcov-report/index.html",
-    "analyze-bundle": "babel-node ./tools/analyzeBundle.js"
+    "flow": "flow"
   },
   "author": "Lara Janecka",
   "license": "MIT",
@@ -45,11 +35,12 @@
     "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",
     "babel-loader": "7.1.1",
-    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-plugin-transform-flow-strip-types": "6.22.0",
     "babel-plugin-transform-react-constant-elements": "6.23.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.6",
     "babel-polyfill": "6.23.0",
     "babel-preset-env": "1.6.0",
+    "babel-preset-flow": "6.23.0",
     "babel-preset-react": "6.24.1",
     "babel-preset-react-hmre": "1.1.1",
     "babel-preset-stage-1": "6.24.1",
@@ -65,6 +56,7 @@
     "eslint-watch": "3.1.2",
     "extract-text-webpack-plugin": "3.0.0-rc.2",
     "file-loader": "0.11.2",
+    "flow-bin": "0.54.0",
     "html-webpack-plugin": "2.29.0",
     "identity-obj-proxy": "3.0.0",
     "jest": "20.0.4",
@@ -104,8 +96,10 @@
   },
   "babel": {
     "presets": [
+      "flow",
       "react",
-      "stage-1"
+      "stage-1",
+      "flow"
     ],
     "env": {
       "development": {
