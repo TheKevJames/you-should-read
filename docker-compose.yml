@@ -2,16 +2,33 @@ version: '3.2'
 
 services:
   client:
-    build: client/
-    ports:
-      - "8080:4000"
-
-  database:
-    image: postgres:9.6.2-alpine
-    ports:
-      - "5432:5432"
+    image: thekevjames/you-should-read-client:latest
+    deploy:
+      mode: replicated
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 20s
+      update_config:
+        parallelism: 1
+        monitor: 20s
 
   server:
-    build: server/
-    ports:
-      - "8081:80"
+    image: thekevjames/you-should-read-server:latest
+    deploy:
+      mode: replicated
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 20s
+      update_config:
+        parallelism: 1
+        monitor: 20s
+    secrets:
+      - database_url
+
+secrets:
+  database_url:
+    external: true
