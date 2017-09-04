@@ -7,5 +7,6 @@ code. These are not to be confused with the
 
 .. toctree::
 
+    server
     config
     view
