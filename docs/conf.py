@@ -35,5 +35,6 @@ pygments_style = 'sphinx'
 todo_include_todos = True
 
 intersphinx_mapping = {
+    'python': ('https://docs.python.org/', None),
     'sanic': ('http://sanic.readthedocs.io/en/latest/', None),
 }

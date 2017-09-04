@@ -10,7 +10,7 @@ class BaseView(sanic.views.HTTPMethodView):
         a request object.
 
         Args:
-            request: A :sanic:`request_data` object.
+            request: A :class:`Request Data<sanic:sanic.request_data>`
             field (str): Field to be looked up.
             default (optional): Default value to return if the field is
                 missing.
