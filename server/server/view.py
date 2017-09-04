@@ -21,8 +21,8 @@ class BaseView(sanic.views.HTTPMethodView):
             returns the default object.
 
         Raises:
-            InvalidUsage(400): The field was not provided and no default was
-                set.
+            :class:`InvalidUsage<sanic:sanic.exceptions.InvalidUsage>`: The
+                field was not provided and no default was set.
         """
         try:
             return request.json[field]

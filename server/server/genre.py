@@ -36,7 +36,8 @@ class GenreList(BaseView):
                 {'id': 42}
 
         Raises:
-            InvalidUsage(400): A required argument was not provided.
+            :class:`InvalidUsage<sanic:sanic.exceptions.InvalidUsage>`: A
+                required argument was not provided.
         """
         name = self.get_field(request, 'name')
 
@@ -56,7 +57,8 @@ class Genre(BaseView):
             null
 
         Raises:
-            NotFound(404): The genre does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The genre does
+                not exist.
         """
         await self.get(request, gid)
 
@@ -79,7 +81,8 @@ class Genre(BaseView):
                 }
 
         Raises:
-            NotFound(404): The genre does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The genre does
+                not exist.
         """
         conn = await asyncpg.connect(dsn=DATABASE_URL)
         rows = await conn.fetch('SELECT * FROM ysr.genre WHERE id=$1', gid)
@@ -108,7 +111,8 @@ class Genre(BaseView):
                 }
 
         Raises:
-            NotFound(404): The genre does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The genre does
+                not exist.
 
         TODO:
             Raise exception when no patch body is provided.

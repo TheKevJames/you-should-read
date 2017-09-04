@@ -36,7 +36,8 @@ class UserList(BaseView):
                 {'id': 42}
 
         Raises:
-            InvalidUsage(400): A required argument was not provided.
+            :class:`InvalidUsage<sanic:sanic.exceptions.InvalidUsage>`: A
+                required argument was not provided.
         """
         name = self.get_field(request, 'name')
 
@@ -56,7 +57,8 @@ class User(BaseView):
             null
 
         Raises:
-            NotFound(404): The user does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The user does
+                not exist.
         """
         await self.get(request, uid)
 
@@ -79,7 +81,8 @@ class User(BaseView):
                 }
 
         Raises:
-            NotFound(404): The user does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The user does
+                not exist.
         """
         conn = await asyncpg.connect(dsn=DATABASE_URL)
         rows = await conn.fetch('SELECT * FROM ysr.user WHERE id=$1', uid)
@@ -107,7 +110,8 @@ class User(BaseView):
                 }
 
         Raises:
-            NotFound(404): The user does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The user does
+                not exist.
 
         TODO:
             Raise exception when no patch body is provided.

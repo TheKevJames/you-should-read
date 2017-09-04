@@ -39,7 +39,8 @@ class MediaList(BaseView):
                 {'id': 42}
 
         Raises:
-            InvalidUsage(400): A required argument was not provided.
+            :class:`InvalidUsage<sanic:sanic.exceptions.InvalidUsage>`: A
+                required argument was not provided.
         """
         name = self.get_field(request, 'name')
         url = request.json.get('url')
@@ -61,7 +62,8 @@ class Media(BaseView):
             null
 
         Raises:
-            NotFound(404): The media does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The media does
+                not exist.
         """
         await self.get(request, mid)
 
@@ -86,7 +88,8 @@ class Media(BaseView):
                 }
 
         Raises:
-            NotFound(404): The media does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The media does
+                not exist.
         """
         conn = await asyncpg.connect(dsn=DATABASE_URL)
         rows = await conn.fetch('SELECT * FROM ysr.media WHERE id=$1',
@@ -119,7 +122,8 @@ class Media(BaseView):
                 }
 
         Raises:
-            NotFound(404): The media does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The media does
+                not exist.
 
         TODO:
             Raise exception when no patch body is provided.
@@ -171,8 +175,10 @@ class MediaGenreList(BaseView):
                 {'id': 42}
 
         Raises:
-            InvalidUsage(400): A required argument was not provided.
-            InvalidUsage(409): A required resource did not exist.
+            :class:`InvalidUsage<sanic:sanic.exceptions.InvalidUsage>`: A
+                required argument was not provided.
+            :class:`InvalidUsage(409)<sanic:sanic.exceptions.InvalidUsage>`: A
+                required resource did not exist.
         """
         gid = self.get_field(request, 'gid')
 
@@ -198,7 +204,8 @@ class MediaGenre(BaseView):
             null
 
         Raises:
-            NotFound(404): The genre did not exist on this media.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The genre did
+                not exist on this media.
         """
         await self.get(request, mid, gid)
 
@@ -223,7 +230,8 @@ class MediaGenre(BaseView):
                 }
 
         Raises:
-            NotFound(404): The media_genre does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The media_genre
+                does not exist.
         """
         conn = await asyncpg.connect(dsn=DATABASE_URL)
         rows = await conn.fetch(

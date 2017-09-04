@@ -43,10 +43,14 @@ class RecommendationList(BaseView):
                 {'id': 42}
 
         Raises:
-            InvalidUsage(400): A required argument was not provided.
-            InvalidUsage(400): A value was too precise.
-            InvalidUsage(409): A required resource did not exist.
-            InvalidUsage(422): Attempted to recommend to self.
+            :class:`InvalidUsage<sanic:sanic.exceptions.InvalidUsage>`: A
+                required argument was not provided.
+            :class:`InvalidUsage<sanic:sanic.exceptions.InvalidUsage>`: A value
+                was too precise.
+            :class:`InvalidUsage(409)<sanic:sanic.exceptions.InvalidUsage>`: A
+                required resource did not exist.
+            :class:`InvalidUsage(422)<sanic:sanic.exceptions.InvalidUsage>`:
+                Attempted to recommend to self.
         """
         fuid = self.get_field(request, 'fuid')
         tuid = self.get_field(request, 'tuid')
@@ -81,7 +85,8 @@ class Recommendation(BaseView):
             null
 
         Raises:
-            NotFound(404): The recommendation does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The
+                recommendation does not exist.
         """
         await self.get(request, rid)
 
@@ -107,7 +112,8 @@ class Recommendation(BaseView):
                 }
 
         Raises:
-            NotFound(404): The recommendation does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The
+                recommendation does not exist.
         """
         conn = await asyncpg.connect(dsn=DATABASE_URL)
         rows = await conn.fetch('SELECT * FROM ysr.recommendation WHERE id=$1',
@@ -141,7 +147,8 @@ class Recommendation(BaseView):
                 }
 
         Raises:
-            NotFound(404): The recommendation does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The
+                recommendation does not exist.
 
         TODO:
             Raise exception when no patch body is provided.

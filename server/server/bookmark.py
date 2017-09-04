@@ -40,8 +40,10 @@ class BookmarkList(BaseView):
                 {'id': 42}
 
         Raises:
-            InvalidUsage(400): A required argument was not provided.
-            InvalidUsage(409): A required resource did not exist.
+            :class:`InvalidUsage<sanic:sanic.exceptions.InvalidUsage>`: A
+                required argument was not provided.
+            :class:`InvalidUsage(409)<sanic:sanic.exceptions.InvalidUsage>`: A
+                required resource did not exist.
         """
         uid = self.get_field(request, 'uid')
         mid = self.get_field(request, 'mid')
@@ -69,7 +71,8 @@ class Bookmark(BaseView):
             null
 
         Raises:
-            NotFound(404): The bookmark does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The bookmark
+                does not exist.
         """
         await self.get(request, bid)
 
@@ -94,7 +97,8 @@ class Bookmark(BaseView):
                 }
 
         Raises:
-            NotFound(404): The bookmark does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The bookmark
+                does not exist.
         """
         conn = await asyncpg.connect(dsn=DATABASE_URL)
         rows = await conn.fetch('SELECT * FROM ysr.bookmark WHERE id=$1', bid)
@@ -125,7 +129,8 @@ class Bookmark(BaseView):
                 }
 
         Raises:
-            NotFound(404): The bookmark does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The bookmark
+                does not exist.
 
         TODO:
             Raise exception when no patch body is provided.

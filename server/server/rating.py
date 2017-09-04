@@ -41,9 +41,12 @@ class RatingList(BaseView):
                 {'id': 42}
 
         Raises:
-            InvalidUsage(400): A required argument was not provided.
-            InvalidUsage(400): A value was too precise.
-            InvalidUsage(409): A required resource did not exist.
+            :class:`InvalidUsage<sanic:sanic.exceptions.InvalidUsage>`: A
+                required argument was not provided.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: A value was too
+                precise.
+            :class:`InvalidUsage(409)<sanic:sanic.exceptions.InvalidUsage>`: A
+                required resource did not exist.
         """
         uid = self.get_field(request, 'uid')
         mid = self.get_field(request, 'mid')
@@ -74,7 +77,8 @@ class Rating(BaseView):
             null
 
         Raises:
-            NotFound(404): The rating does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The rating does
+                not exist.
         """
         await self.get(request, rid)
 
@@ -99,7 +103,8 @@ class Rating(BaseView):
                 }
 
         Raises:
-            NotFound(404): The rating does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The rating does
+                not exist.
         """
         conn = await asyncpg.connect(dsn=DATABASE_URL)
         rows = await conn.fetch('SELECT * FROM ysr.rating WHERE id=$1', rid)
@@ -131,7 +136,8 @@ class Rating(BaseView):
                 }
 
         Raises:
-            NotFound(404): The rating does not exist.
+            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The rating does
+                not exist.
 
         TODO:
             Raise exception when no patch body is provided.
