@@ -10,4 +10,4 @@ RUN apk add --no-cache \
     python -m pip install --no-cache -r /src/requirements.txt
 
 COPY . /src
-CMD ["/usr/local/bin/python", "/src/server.py"]
+CMD ["/usr/local/bin/python", "/src/run.py"]

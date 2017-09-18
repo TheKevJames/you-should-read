@@ -30,9 +30,6 @@ repos:
         - -d locally-disabled
         - -d missing-docstring
         - -d duplicate-code  # TODO: abstract view methods
-        - -d cyclic-import  # TODO: refactor server imports
-        - -d no-name-in-module  # TODO: refactor server imports
-        - -d W0406  # TODO: refactor server imports
 -   repo: git://github.com/pre-commit/mirrors-fixmyjs
     sha: v2.0.0
     hooks:

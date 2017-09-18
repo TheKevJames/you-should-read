@@ -1,8 +1,8 @@
 import asyncpg
 import sanic
 
-from server.config import DATABASE_URL
-from server.view import BaseView
+from .config import DATABASE_URL
+from .view import BaseView
 
 
 class GenreList(BaseView):

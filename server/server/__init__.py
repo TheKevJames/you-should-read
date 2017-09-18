@@ -1,12 +1,12 @@
 import sanic
 
-from server.bookmark import bookmark
-from server.genre import genre
-from server.media import media
-from server.rating import rating
-from server.recommendation import recommendation
-from server.system import system
-from server.user import user
+from .bookmark import bookmark
+from .genre import genre
+from .media import media
+from .rating import rating
+from .recommendation import recommendation
+from .system import system
+from .user import user
 
 
 app = sanic.Sanic('YouShouldRead')
