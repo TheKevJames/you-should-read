@@ -1,5 +1,6 @@
+repos:
 -   repo: git://github.com/pre-commit/pre-commit-hooks
-    sha: v0.9.2
+    sha: v0.9.3
     hooks:
     -   id: check-ast
     -   id: check-case-conflict
@@ -42,6 +43,6 @@
     -   id: jshint
         args: ["-c", "client/.jshintrc"]
 -   repo: git://github.com/Lucas-C/pre-commit-hooks
-    sha: v1.1.1
+    sha: v1.1.4
     hooks:
     -   id: remove-tabs
