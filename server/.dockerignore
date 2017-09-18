@@ -1,4 +1,7 @@
 __pycache__/*
 *.egg-info/*
+tests/*
 
 setup.py
+
+requirements.test.txt

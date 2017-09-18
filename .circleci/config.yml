@@ -84,6 +84,23 @@ jobs:
             cd database/
             sqitch deploy --verify
 
+  server-test:
+    docker:
+      - image: python:3.6.2
+    steps:
+      - checkout
+      - run: pip install -r server/requirements.test.txt
+      - run:
+          name: py.test
+          command: |
+            cd server/
+            python -m pytest --cov=.
+      - run:
+          name: codecov
+          command: |
+            cd server/
+            codecov
+
   server-image:
     docker:
       - image: docker:17.05.0-ce-git
@@ -228,13 +245,19 @@ workflows:
           requires:
             - database
 
+      - server-test:
+          filters:
+            tags:
+              only: /.*/
+          requires:
+            - check
       - server-image:
           context: org-global
           filters:
             tags:
               only: /.*/
           requires:
-            - check
+            - server-test
       - server-deploy:
           context: org-global
           filters:
