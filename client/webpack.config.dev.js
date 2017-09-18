@@ -5,7 +5,11 @@ import path from 'path';
 
 export default {
   resolve: {
-    extensions: ['*', '.js', '.jsx', '.json']
+    extensions: ['*', '.js', '.jsx', '.json'],
+    modules: [
+      path.resolve(__dirname, 'node_modules'),
+      path.resolve(__dirname, 'src'),
+    ]
   },
   devtool: 'eval-source-map', // more info:https://webpack.github.io/docs/build-performance.html#sourcemaps and https://webpack.github.io/docs/configuration.html#devtool
   entry: [
@@ -44,7 +48,7 @@ export default {
         sassLoader: {
           includePaths: [path.resolve(__dirname, 'src', 'scss')]
         },
-        context: '/',
+        context: './src',
         postcss: () => [autoprefixer],
       }
     })

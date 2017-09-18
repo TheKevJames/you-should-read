@@ -33,11 +33,6 @@ repos:
     sha: v2.0.0
     hooks:
     -   id: fixmyjs
--   repo: git://github.com/pre-commit/mirrors-jshint
-    sha: v2.9.5
-    hooks:
-    -   id: jshint
-        args: ["-c", "client/.jshintrc"]
 -   repo: git://github.com/Lucas-C/pre-commit-hooks
     sha: v1.1.4
     hooks:

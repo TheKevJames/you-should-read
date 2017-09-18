@@ -1,3 +1,8 @@
-// Set up your root reducer here...
- import { combineReducers } from 'redux';
- export default combineReducers;
+import { combineReducers } from 'redux'
+import MediaReducer from 'reducers/MediaReducer';
+
+const reducer = combineReducers({
+  media: MediaReducer
+});
+
+export default reducer;
