@@ -76,13 +76,26 @@ jobs:
             # https://github.com/resin-io-library/base-images/issues/273
             mkdir -p /usr/share/man/man1 /usr/share/man/man7
             apt-get update -qy
-            apt-get install -qy sqitch
+            apt-get install -qy ca-certificates graphviz postgresql-autodoc sqitch
       - checkout
       - run:
           name: verify migrations
           command: |
             cd database/
             sqitch deploy --verify
+      - run:
+          name: collect schema
+          command: |
+            postgresql_autodoc -t dot -u postgres -h localhost -p 5432 -d postgres -s ysr
+            mkdir -p schema
+            mv postgres.dot schema/schema.dot
+      - run:
+          name: draw schema
+          command: |
+            dot -Tpng -o schema/schema.png schema/schema.dot
+      - store_artifacts:
+          path: schema
+          destination: schema
 
   server-test:
     docker:
