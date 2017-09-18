@@ -8,6 +8,7 @@ developer docs.
    :maxdepth: 3
    :caption: Contents:
 
+   client/index
    database/index
    server/index
 
