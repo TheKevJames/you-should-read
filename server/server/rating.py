@@ -22,9 +22,7 @@ class RatingList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch('SELECT * FROM ysr.rating')
-        return sanic.response.json(dict(r) for r in rows)
+        return await super(RatingList, self).get_list('rating')
 
     async def post(self, request):
         """Create a rating.
@@ -43,8 +41,8 @@ class RatingList(BaseView):
         Raises:
             :class:`InvalidUsage<sanic:sanic.exceptions.InvalidUsage>`: A
                 required argument was not provided.
-            :class:`NotFound<sanic:sanic.exceptions.NotFound>`: A value was too
-                precise.
+            :class:`InvalidUsage<sanic:sanic.exceptions.InvalidUsage>`: A value
+                was too precise.
             :class:`InvalidUsage(409)<sanic:sanic.exceptions.InvalidUsage>`: A
                 required resource did not exist.
         """
@@ -52,25 +50,18 @@ class RatingList(BaseView):
         mid = self.get_field(request, 'mid')
         value = self.get_field(request, 'value')
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
         try:
-            rid = await conn.fetchval(
+            return await super(RatingList, self).create_item(
                 """ INSERT INTO ysr.rating (uid, mid, value)
                     VALUES ($1, $2, $3)
-                    RETURNING id """, uid, mid, value)
+                    RETURNING id """, (uid, mid, value))
         except asyncpg.exceptions.NumericValueOutOfRangeError as e:
             raise sanic.exceptions.InvalidUsage(
                 'value={} is too precise: {}'.format(value, str(e)))
-        except asyncpg.exceptions.ForeignKeyViolationError as e:
-            raise sanic.exceptions.InvalidUsage(
-                'rating had invalid foreign keys: {}'.format(str(e)),
-                status_code=409)
-
-        return sanic.response.json({'id': rid}, status=201)
 
 
 class Rating(BaseView):
-    async def delete(self, request, rid):
+    async def delete(self, _request, rid):
         """Delete a single rating.
 
         Returns:
@@ -80,11 +71,7 @@ class Rating(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The rating does
                 not exist.
         """
-        await self.get(request, rid)
-
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute('DELETE FROM ysr.rating WHERE id=$1', rid)
-        return sanic.response.json(None, status=204)
+        return await super(Rating, self).delete_item('rating', rid)
 
     async def get(self, _request, rid):
         """Get a single rating.
@@ -106,14 +93,7 @@ class Rating(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The rating does
                 not exist.
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch('SELECT * FROM ysr.rating WHERE id=$1', rid)
-
-        try:
-            return sanic.response.json(dict(rows[0]))
-        except IndexError:
-            raise sanic.exceptions.NotFound(
-                'no rating with id {}'.format(rid))
+        return await super(Rating, self).get_item('rating', rid)
 
     async def patch(self, request, rid):
         """Update a single rating.

@@ -35,6 +35,7 @@ pygments_style = 'sphinx'
 todo_include_todos = True
 
 intersphinx_mapping = {
+    'asyncpg': ('https://magicstack.github.io/asyncpg/current/', None),
     'python': ('https://docs.python.org/', None),
     'sanic': ('http://sanic.readthedocs.io/en/latest/', None),
 }

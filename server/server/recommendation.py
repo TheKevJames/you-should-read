@@ -23,9 +23,7 @@ class RecommendationList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch('SELECT * FROM ysr.recommendation')
-        return sanic.response.json(dict(r) for r in rows)
+        return await super(RecommendationList, self).get_list('recommendation')
 
     async def post(self, request):
         """Create a recommendation.
@@ -57,28 +55,21 @@ class RecommendationList(BaseView):
         mid = self.get_field(request, 'mid')
         value = self.get_field(request, 'value')
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
         try:
-            rid = await conn.fetchval(
+            return await super(RecommendationList, self).create_item(
                 """ INSERT INTO ysr.recommendation (fuid, tuid, mid, value)
                     VALUES ($1, $2, $3, $4)
-                    RETURNING id """, fuid, tuid, mid, value)
+                    RETURNING id """, (fuid, tuid, mid, value))
         except asyncpg.exceptions.CheckViolationError:
             raise sanic.exceptions.InvalidUsage('cannot recommend to self',
                                                 status_code=422)
-        except asyncpg.exceptions.ForeignKeyViolationError as e:
-            raise sanic.exceptions.InvalidUsage(
-                'recommendation had invalid foreign keys: {}'.format(str(e)),
-                status_code=409)
         except asyncpg.exceptions.NumericValueOutOfRangeError as e:
             raise sanic.exceptions.InvalidUsage(
                 'value={} is too precise: {}'.format(value, str(e)))
 
-        return sanic.response.json({'id': rid}, status=201)
-
 
 class Recommendation(BaseView):
-    async def delete(self, request, rid):
+    async def delete(self, _request, rid):
         """Delete a single recommendation.
 
         Returns:
@@ -88,11 +79,8 @@ class Recommendation(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The
                 recommendation does not exist.
         """
-        await self.get(request, rid)
-
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute('DELETE FROM ysr.recommendation WHERE id=$1', rid)
-        return sanic.response.json(None, status=204)
+        return await super(Recommendation, self).delete_item('recommendation',
+                                                             rid)
 
     async def get(self, _request, rid):
         """Get a single recommendation.
@@ -115,15 +103,8 @@ class Recommendation(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The
                 recommendation does not exist.
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch('SELECT * FROM ysr.recommendation WHERE id=$1',
-                                rid)
-
-        try:
-            return sanic.response.json(dict(rows[0]))
-        except IndexError:
-            raise sanic.exceptions.NotFound(
-                'no recommendation with id {}'.format(rid))
+        return await super(Recommendation, self).get_item('recommendation',
+                                                          rid)
 
     async def patch(self, request, rid):
         """Update a single recommendation.

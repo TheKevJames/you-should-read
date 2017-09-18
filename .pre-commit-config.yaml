@@ -29,7 +29,6 @@ repos:
         - -d invalid-name
         - -d locally-disabled
         - -d missing-docstring
-        - -d duplicate-code  # TODO: abstract view methods
 -   repo: git://github.com/pre-commit/mirrors-fixmyjs
     sha: v2.0.0
     hooks:

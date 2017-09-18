@@ -20,9 +20,7 @@ class UserList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch('SELECT * FROM ysr.user')
-        return sanic.response.json(dict(r) for r in rows)
+        return await super(UserList, self).get_list('user')
 
     async def post(self, request):
         """Create a user.
@@ -41,16 +39,14 @@ class UserList(BaseView):
         """
         name = self.get_field(request, 'name')
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        uid = await conn.fetchval(
+        return await super(UserList, self).create_item(
             """ INSERT INTO ysr.user (name)
                 VALUES ($1)
-                RETURNING id """, name)
-        return sanic.response.json({'id': uid}, status=201)
+                RETURNING id """, (name, ))
 
 
 class User(BaseView):
-    async def delete(self, request, uid):
+    async def delete(self, _request, uid):
         """Delete a single user.
 
         Returns:
@@ -60,11 +56,7 @@ class User(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The user does
                 not exist.
         """
-        await self.get(request, uid)
-
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute('DELETE FROM ysr.user WHERE id=$1', uid)
-        return sanic.response.json(None, status=204)
+        return await super(User, self).delete_item('user', uid)
 
     async def get(self, _request, uid):
         """Get a single user.
@@ -84,13 +76,7 @@ class User(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The user does
                 not exist.
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch('SELECT * FROM ysr.user WHERE id=$1', uid)
-
-        try:
-            return sanic.response.json(dict(rows[0]))
-        except IndexError:
-            raise sanic.exceptions.NotFound('no user with id {}'.format(uid))
+        return await super(User, self).get_item('user', uid)
 
     async def patch(self, request, uid):
         """Update a single user.

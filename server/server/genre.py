@@ -20,9 +20,7 @@ class GenreList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch('SELECT * FROM ysr.genre')
-        return sanic.response.json(dict(r) for r in rows)
+        return await super(GenreList, self).get_list('genre')
 
     async def post(self, request):
         """Create a genre.
@@ -41,16 +39,14 @@ class GenreList(BaseView):
         """
         name = self.get_field(request, 'name')
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        gid = await conn.fetchval(
+        return await super(GenreList, self).create_item(
             """ INSERT INTO ysr.genre (name)
                 VALUES ($1)
-                RETURNING id """, name)
-        return sanic.response.json({'id': gid}, status=201)
+                RETURNING id """, (name, ))
 
 
 class Genre(BaseView):
-    async def delete(self, request, gid):
+    async def delete(self, _request, gid):
         """Delete a single genre.
 
         Returns:
@@ -60,11 +56,7 @@ class Genre(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The genre does
                 not exist.
         """
-        await self.get(request, gid)
-
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute('DELETE FROM ysr.genre WHERE id=$1', gid)
-        return sanic.response.json(None, status=204)
+        return await super(Genre, self).delete_item('genre', gid)
 
     async def get(self, _request, gid):
         """Get a single genre.
@@ -84,14 +76,7 @@ class Genre(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The genre does
                 not exist.
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch('SELECT * FROM ysr.genre WHERE id=$1', gid)
-
-        try:
-            return sanic.response.json(dict(rows[0]))
-        except IndexError:
-            raise sanic.exceptions.NotFound(
-                'no genre with id {}'.format(gid))
+        return await super(Genre, self).get_item('genre', gid)
 
     async def patch(self, request, gid):
         """Update a single genre.

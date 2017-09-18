@@ -22,9 +22,7 @@ class MediaList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch('SELECT * FROM ysr.media')
-        return sanic.response.json(dict(r) for r in rows)
+        return await super(MediaList, self).get_list('media')
 
     async def post(self, request):
         """Create a media.
@@ -45,17 +43,14 @@ class MediaList(BaseView):
         name = self.get_field(request, 'name')
         url = request.json.get('url')
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        mid = await conn.fetchval(
+        return await super(MediaList, self).create_item(
             """ INSERT INTO ysr.media (name, url)
                 VALUES ($1, $2)
-                RETURNING id """, name, url)
-
-        return sanic.response.json({'id': mid}, status=201)
+                RETURNING id """, (name, url))
 
 
 class Media(BaseView):
-    async def delete(self, request, mid):
+    async def delete(self, _request, mid):
         """Delete a single media.
 
         Returns:
@@ -65,11 +60,7 @@ class Media(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The media does
                 not exist.
         """
-        await self.get(request, mid)
-
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute('DELETE FROM ysr.media WHERE id=$1', mid)
-        return sanic.response.json(None, status=204)
+        return await super(Media, self).delete_item('media', mid)
 
     async def get(self, _request, mid):
         """Get a single media.
@@ -91,15 +82,7 @@ class Media(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The media does
                 not exist.
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch('SELECT * FROM ysr.media WHERE id=$1',
-                                mid)
-
-        try:
-            return sanic.response.json(dict(rows[0]))
-        except IndexError:
-            raise sanic.exceptions.NotFound(
-                'no media with id {}'.format(mid))
+        return await super(Media, self).get_item('media', mid)
 
     async def patch(self, request, mid):
         """Update a single media.

@@ -22,9 +22,7 @@ class BookmarkList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch('SELECT * FROM ysr.bookmark')
-        return sanic.response.json(dict(r) for r in rows)
+        return await super(BookmarkList, self).get_list('bookmark')
 
     async def post(self, request):
         """Create a bookmark.
@@ -49,22 +47,14 @@ class BookmarkList(BaseView):
         mid = self.get_field(request, 'mid')
         url = self.get_field(request, 'url')
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        try:
-            bid = await conn.fetchval(
-                """ INSERT INTO ysr.bookmark (uid, mid, url)
-                    VALUES ($1, $2, $3)
-                    RETURNING id """, uid, mid, url)
-        except asyncpg.exceptions.ForeignKeyViolationError as e:
-            raise sanic.exceptions.InvalidUsage(
-                'bookmark had invalid foreign keys: {}'.format(str(e)),
-                status_code=409)
-
-        return sanic.response.json({'id': bid}, status=201)
+        return await super(BookmarkList, self).create_item(
+            """ INSERT INTO ysr.bookmark (uid, mid, url)
+                VALUES ($1, $2, $3)
+                RETURNING id """, (uid, mid, url))
 
 
 class Bookmark(BaseView):
-    async def delete(self, request, bid):
+    async def delete(self, _request, bid):
         """Delete a single bookmark.
 
         Returns:
@@ -74,11 +64,7 @@ class Bookmark(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The bookmark
                 does not exist.
         """
-        await self.get(request, bid)
-
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute('DELETE FROM ysr.bookmark WHERE id=$1', bid)
-        return sanic.response.json(None, status=204)
+        return await super(Bookmark, self).delete_item('bookmark', bid)
 
     async def get(self, _request, bid):
         """Get a single bookmark.
@@ -100,14 +86,7 @@ class Bookmark(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The bookmark
                 does not exist.
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch('SELECT * FROM ysr.bookmark WHERE id=$1', bid)
-
-        try:
-            return sanic.response.json(dict(rows[0]))
-        except IndexError:
-            raise sanic.exceptions.NotFound(
-                'no bookmark with id {}'.format(bid))
+        return await super(Bookmark, self).get_item('bookmark', bid)
 
     async def patch(self, request, bid):
         """Update a single bookmark.
