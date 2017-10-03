@@ -21,7 +21,7 @@ app.blueprint(user)
 
 
 @app.exception(Exception)
-def send_exceptions_to_sentry(_request, _exception):
+def send_exceptions_to_sentry(request, exception):  # pylint: disable=unused-argument
     sentry.captureException()
 
 
