@@ -20,7 +20,7 @@ app.blueprint(system)
 app.blueprint(user)
 
 
-@app.exception(sanic.exceptions.ServerError)
+@app.exception(Exception)
 def send_exceptions_to_sentry(_request, _exception):
     sentry.captureException()
 
