@@ -1,5 +1,6 @@
 import sanic
 
+from .config import sentry
 from .bookmark import bookmark
 from .genre import genre
 from .media import media
@@ -17,6 +18,11 @@ app.blueprint(rating)
 app.blueprint(recommendation)
 app.blueprint(system)
 app.blueprint(user)
+
+
+@app.exception(sanic.exceptions.ServerError)
+def send_exceptions_to_sentry(_request, _exception):
+    sentry.captureException()
 
 
 @app.middleware('response')
