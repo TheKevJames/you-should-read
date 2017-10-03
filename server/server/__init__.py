@@ -32,7 +32,7 @@ async def attach_pgpool(app, loop):  # pylint: disable=redefined-outer-name
         import ssl
         ssl_context = ssl.SSLContext()
         app.pool = await asyncpg.create_pool(dsn=DATABASE_URL, ssl=ssl_context,
-                                             loop=loop)
+                                             min_size=5, max_size=5, loop=loop)
     except FileNotFoundError:
         DATABASE_URL = os.environ.get(
             'DATABASE_URL', 'postgres://postgres@database:5432/postgres')
