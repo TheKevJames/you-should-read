@@ -1,12 +1,10 @@
-import asyncpg
 import sanic
 
-from .config import DATABASE_URL
 from .view import BaseView
 
 
 class UserList(BaseView):
-    async def get(self, _request):
+    async def get(self, request):
         """Get all users.
 
         Returns:
@@ -20,7 +18,7 @@ class UserList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        return await super(UserList, self).get_list('user')
+        return await super(UserList, self).get_list(request.app.pool, 'user')
 
     async def post(self, request):
         """Create a user.
@@ -40,13 +38,14 @@ class UserList(BaseView):
         name = self.get_field(request, 'name')
 
         return await super(UserList, self).create_item(
+            request.app.pool,
             """ INSERT INTO ysr.user (name)
                 VALUES ($1)
                 RETURNING id """, (name, ))
 
 
 class User(BaseView):
-    async def delete(self, _request, uid):
+    async def delete(self, request, uid):
         """Delete a single user.
 
         Returns:
@@ -56,9 +55,10 @@ class User(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The user does
                 not exist.
         """
-        return await super(User, self).delete_item('user', uid)
+        return await super(User, self).delete_item(request.app.pool, 'user',
+                                                   uid)
 
-    async def get(self, _request, uid):
+    async def get(self, request, uid):
         """Get a single user.
 
         Returns:
@@ -76,7 +76,7 @@ class User(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The user does
                 not exist.
         """
-        return await super(User, self).get_item('user', uid)
+        return await super(User, self).get_item(request.app.pool, 'user', uid)
 
     async def patch(self, request, uid):
         """Update a single user.
@@ -106,9 +106,9 @@ class User(BaseView):
 
         name = self.get_field(request, 'name', default=current['name'])
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute('UPDATE ysr.user SET name=$1 WHERE id=$2', name,
-                           uid)
+        async with request.app.pool.acquire() as conn:
+            await conn.execute('UPDATE ysr.user SET name=$1 WHERE id=$2', name,
+                               uid)
 
         return await self.get(request, uid)
 

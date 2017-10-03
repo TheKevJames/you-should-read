@@ -1,3 +1,6 @@
+import os
+
+import asyncpg
 import sanic
 
 from .config import sentry
@@ -18,6 +21,22 @@ app.blueprint(rating)
 app.blueprint(recommendation)
 app.blueprint(system)
 app.blueprint(user)
+
+
+@app.listener('after_server_start')
+async def attach_pgpool(app, loop):  # pylint: disable=redefined-outer-name
+    try:
+        DATABASE_URL = open('/run/secrets/database_url').read().rstrip()
+
+        # require ssl in production
+        import ssl
+        ssl_context = ssl.SSLContext()
+        app.pool = await asyncpg.create_pool(dsn=DATABASE_URL, ssl=ssl_context,
+                                             loop=loop)
+    except FileNotFoundError:
+        DATABASE_URL = os.environ.get(
+            'DATABASE_URL', 'postgres://postgres@database:5432/postgres')
+        app.pool = await asyncpg.create_pool(dsn=DATABASE_URL, loop=loop)
 
 
 @app.exception(Exception)

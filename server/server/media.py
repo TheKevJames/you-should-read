@@ -1,12 +1,11 @@
 import asyncpg
 import sanic
 
-from .config import DATABASE_URL
 from .view import BaseView
 
 
 class MediaList(BaseView):
-    async def get(self, _request):
+    async def get(self, request):
         """Get all media.
 
         Returns:
@@ -22,7 +21,7 @@ class MediaList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        return await super(MediaList, self).get_list('media')
+        return await super(MediaList, self).get_list(request.app.pool, 'media')
 
     async def post(self, request):
         """Create a media.
@@ -44,13 +43,14 @@ class MediaList(BaseView):
         url = request.json.get('url')
 
         return await super(MediaList, self).create_item(
+            request.app.pool,
             """ INSERT INTO ysr.media (name, url)
                 VALUES ($1, $2)
                 RETURNING id """, (name, url))
 
 
 class Media(BaseView):
-    async def delete(self, _request, mid):
+    async def delete(self, request, mid):
         """Delete a single media.
 
         Returns:
@@ -60,9 +60,10 @@ class Media(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The media does
                 not exist.
         """
-        return await super(Media, self).delete_item('media', mid)
+        return await super(Media, self).delete_item(request.app.pool, 'media',
+                                                    mid)
 
-    async def get(self, _request, mid):
+    async def get(self, request, mid):
         """Get a single media.
 
         Returns:
@@ -82,7 +83,8 @@ class Media(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The media does
                 not exist.
         """
-        return await super(Media, self).get_item('media', mid)
+        return await super(Media, self).get_item(request.app.pool, 'media',
+                                                 mid)
 
     async def patch(self, request, mid):
         """Update a single media.
@@ -116,15 +118,17 @@ class Media(BaseView):
         name = self.get_field(request, 'name', default=current['name'])
         url = self.get_field(request, 'url', default=current['url'])
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute('UPDATE ysr.media SET name=$1, url=$2 WHERE id=$2',
-                           name, url, mid)
+        async with request.app.pool.acquire() as conn:
+            await conn.execute(
+                """ UPDATE ysr.media
+                    SET name=$1, url=$2 WHERE id=$2 """, name,
+                url, mid)
 
         return await self.get(request, mid)
 
 
 class MediaGenreList(BaseView):
-    async def get(self, _request, mid):
+    async def get(self, request, mid):
         """Get all genres for this media.
 
         Returns:
@@ -138,12 +142,13 @@ class MediaGenreList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch(
-            """ SELECT g.id, g.name, g.created_at, g.updated_at
-                FROM ysr.genre g
-                INNER JOIN ysr.media_genre mg ON mg.gid = g.id
-                WHERE mg.mid=$1 """, mid)
+        async with request.app.pool.acquire() as conn:
+            rows = await conn.fetch(
+                """ SELECT g.id, g.name, g.created_at, g.updated_at
+                    FROM ysr.genre g
+                    INNER JOIN ysr.media_genre mg ON mg.gid = g.id
+                    WHERE mg.mid=$1 """, mid)
+
         return sanic.response.json(dict(r) for r in rows)
 
     async def post(self, request, mid):
@@ -165,16 +170,16 @@ class MediaGenreList(BaseView):
         """
         gid = self.get_field(request, 'gid')
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        try:
-            mgid = await conn.fetchval(
-                """ INSERT INTO ysr.media_genre (mid, gid)
-                    VALUES ($1, $2)
-                    RETURNING id """, mid, gid)
-        except asyncpg.exceptions.ForeignKeyViolationError as e:
-            raise sanic.exceptions.InvalidUsage(
-                'media_genre had invalid foreign keys: {}'.format(str(e)),
-                status_code=409)
+        async with request.app.pool.acquire() as conn:
+            try:
+                mgid = await conn.fetchval(
+                    """ INSERT INTO ysr.media_genre (mid, gid)
+                        VALUES ($1, $2)
+                        RETURNING id """, mid, gid)
+            except asyncpg.exceptions.ForeignKeyViolationError as e:
+                raise sanic.exceptions.InvalidUsage(
+                    'media_genre had invalid foreign keys: {}'.format(str(e)),
+                    status_code=409)
 
         return sanic.response.json({'id': mgid}, status=201)
 
@@ -192,13 +197,14 @@ class MediaGenre(BaseView):
         """
         await self.get(request, mid, gid)
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute(
-            """ DELETE FROM ysr.media_genre
-                WHERE mid=$1 AND gid=$2 """, mid, gid)
+        async with request.app.pool.acquire() as conn:
+            await conn.execute(
+                """ DELETE FROM ysr.media_genre
+                    WHERE mid=$1 AND gid=$2 """, mid, gid)
+
         return sanic.response.json(None, status=204)
 
-    async def get(self, _request, mid, gid):
+    async def get(self, request, mid, gid):
         """Get a single genre on this media.
 
         Returns:
@@ -216,12 +222,12 @@ class MediaGenre(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The media_genre
                 does not exist.
         """
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        rows = await conn.fetch(
-            """ SELECT g.id, g.name, g.created_at, g.updated_at
-                FROM ysr.genre g
-                INNER JOIN ysr.media_genre mg ON mg.gid = g.id
-                WHERE mg.mid=$1 AND mg.gid=$2 """, mid, gid)
+        async with request.app.pool.acquire() as conn:
+            rows = await conn.fetch(
+                """ SELECT g.id, g.name, g.created_at, g.updated_at
+                    FROM ysr.genre g
+                    INNER JOIN ysr.media_genre mg ON mg.gid = g.id
+                    WHERE mg.mid=$1 AND mg.gid=$2 """, mid, gid)
 
         try:
             return sanic.response.json(dict(rows[0]))

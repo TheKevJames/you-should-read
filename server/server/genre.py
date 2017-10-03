@@ -1,12 +1,10 @@
-import asyncpg
 import sanic
 
-from .config import DATABASE_URL
 from .view import BaseView
 
 
 class GenreList(BaseView):
-    async def get(self, _request):
+    async def get(self, request):
         """Get all genres.
 
         Returns:
@@ -20,7 +18,7 @@ class GenreList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        return await super(GenreList, self).get_list('genre')
+        return await super(GenreList, self).get_list(request.app.pool, 'genre')
 
     async def post(self, request):
         """Create a genre.
@@ -40,13 +38,14 @@ class GenreList(BaseView):
         name = self.get_field(request, 'name')
 
         return await super(GenreList, self).create_item(
+            request.app.pool,
             """ INSERT INTO ysr.genre (name)
                 VALUES ($1)
                 RETURNING id """, (name, ))
 
 
 class Genre(BaseView):
-    async def delete(self, _request, gid):
+    async def delete(self, request, gid):
         """Delete a single genre.
 
         Returns:
@@ -56,9 +55,10 @@ class Genre(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The genre does
                 not exist.
         """
-        return await super(Genre, self).delete_item('genre', gid)
+        return await super(Genre, self).delete_item(request.app.pool, 'genre',
+                                                    gid)
 
-    async def get(self, _request, gid):
+    async def get(self, request, gid):
         """Get a single genre.
 
         Returns:
@@ -76,7 +76,8 @@ class Genre(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The genre does
                 not exist.
         """
-        return await super(Genre, self).get_item('genre', gid)
+        return await super(Genre, self).get_item(request.app.pool, 'genre',
+                                                 gid)
 
     async def patch(self, request, gid):
         """Update a single genre.
@@ -106,9 +107,9 @@ class Genre(BaseView):
 
         name = self.get_field(request, 'name', default=current['name'])
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute('UPDATE ysr.genre SET name=$1 WHERE id=$2', name,
-                           gid)
+        async with request.app.pool.acquire() as conn:
+            await conn.execute('UPDATE ysr.genre SET name=$1 WHERE id=$2',
+                               name, gid)
 
         return await self.get(request, gid)
 

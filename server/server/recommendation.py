@@ -1,12 +1,11 @@
 import asyncpg
 import sanic
 
-from .config import DATABASE_URL
 from .view import BaseView
 
 
 class RecommendationList(BaseView):
-    async def get(self, _request):
+    async def get(self, request):
         """Get all recommendations.
 
         Returns:
@@ -23,7 +22,8 @@ class RecommendationList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        return await super(RecommendationList, self).get_list('recommendation')
+        return await super(RecommendationList, self).get_list(request.app.pool,
+                                                              'recommendation')
 
     async def post(self, request):
         """Create a recommendation.
@@ -57,6 +57,7 @@ class RecommendationList(BaseView):
 
         try:
             return await super(RecommendationList, self).create_item(
+                request.app.pool,
                 """ INSERT INTO ysr.recommendation (fuid, tuid, mid, value)
                     VALUES ($1, $2, $3, $4)
                     RETURNING id """, (fuid, tuid, mid, value))
@@ -69,7 +70,7 @@ class RecommendationList(BaseView):
 
 
 class Recommendation(BaseView):
-    async def delete(self, _request, rid):
+    async def delete(self, request, rid):
         """Delete a single recommendation.
 
         Returns:
@@ -79,10 +80,11 @@ class Recommendation(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The
                 recommendation does not exist.
         """
-        return await super(Recommendation, self).delete_item('recommendation',
+        return await super(Recommendation, self).delete_item(request.app.pool,
+                                                             'recommendation',
                                                              rid)
 
-    async def get(self, _request, rid):
+    async def get(self, request, rid):
         """Get a single recommendation.
 
         Returns:
@@ -103,7 +105,8 @@ class Recommendation(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The
                 recommendation does not exist.
         """
-        return await super(Recommendation, self).get_item('recommendation',
+        return await super(Recommendation, self).get_item(request.app.pool,
+                                                          'recommendation',
                                                           rid)
 
     async def patch(self, request, rid):
@@ -138,9 +141,10 @@ class Recommendation(BaseView):
 
         value = self.get_field(request, 'value', default=current['value'])
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute(
-            'UPDATE ysr.recommendation SET value=$1 WHERE id=$2', value, rid)
+        async with request.app.pool.acquire() as conn:
+            await conn.execute(
+                """ UPDATE ysr.recommendation
+                    SET value=$1 WHERE id=$2 """, value, rid)
 
         return await self.get(request, rid)
 

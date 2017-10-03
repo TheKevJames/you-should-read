@@ -1,12 +1,10 @@
-import asyncpg
 import sanic
 
-from .config import DATABASE_URL
 from .view import BaseView
 
 
 class BookmarkList(BaseView):
-    async def get(self, _request):
+    async def get(self, request):
         """Get all bookmarks.
 
         Returns:
@@ -22,7 +20,8 @@ class BookmarkList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        return await super(BookmarkList, self).get_list('bookmark')
+        return await super(BookmarkList, self).get_list(request.app.pool,
+                                                        'bookmark')
 
     async def post(self, request):
         """Create a bookmark.
@@ -48,13 +47,14 @@ class BookmarkList(BaseView):
         url = self.get_field(request, 'url')
 
         return await super(BookmarkList, self).create_item(
+            request.app.pool,
             """ INSERT INTO ysr.bookmark (uid, mid, url)
                 VALUES ($1, $2, $3)
                 RETURNING id """, (uid, mid, url))
 
 
 class Bookmark(BaseView):
-    async def delete(self, _request, bid):
+    async def delete(self, request, bid):
         """Delete a single bookmark.
 
         Returns:
@@ -64,9 +64,10 @@ class Bookmark(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The bookmark
                 does not exist.
         """
-        return await super(Bookmark, self).delete_item('bookmark', bid)
+        return await super(Bookmark, self).delete_item(request.app.pool,
+                                                       'bookmark', bid)
 
-    async def get(self, _request, bid):
+    async def get(self, request, bid):
         """Get a single bookmark.
 
         Returns:
@@ -86,7 +87,8 @@ class Bookmark(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The bookmark
                 does not exist.
         """
-        return await super(Bookmark, self).get_item('bookmark', bid)
+        return await super(Bookmark, self).get_item(request.app.pool,
+                                                    'bookmark', bid)
 
     async def patch(self, request, bid):
         """Update a single bookmark.
@@ -118,9 +120,9 @@ class Bookmark(BaseView):
 
         url = self.get_field(request, 'url', default=current['url'])
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute('UPDATE ysr.bookmark SET url=$1 WHERE id=$2', url,
-                           bid)
+        async with request.app.pool.acquire() as conn:
+            await conn.execute('UPDATE ysr.bookmark SET url=$1 WHERE id=$2',
+                               url, bid)
 
         return await self.get(request, bid)
 

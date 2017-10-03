@@ -7,7 +7,8 @@ RUN apk add --no-cache \
         musl-dev \
         postgresql-dev \
         python3-dev && \
-    python -m pip install --no-cache -r /src/requirements.txt
+    python -m pip install --no-cache -r /src/requirements.txt && \
+    rm -rf /var/cache/apk/*
 
 COPY . /src
 CMD ["/usr/local/bin/python", "/src/run.py"]

@@ -1,12 +1,11 @@
 import asyncpg
 import sanic
 
-from .config import DATABASE_URL
 from .view import BaseView
 
 
 class RatingList(BaseView):
-    async def get(self, _request):
+    async def get(self, request):
         """Get all ratings.
 
         Returns:
@@ -22,7 +21,8 @@ class RatingList(BaseView):
                     'updated_at': 1502680672
                 }
         """
-        return await super(RatingList, self).get_list('rating')
+        return await super(RatingList, self).get_list(request.app.pool,
+                                                      'rating')
 
     async def post(self, request):
         """Create a rating.
@@ -52,6 +52,7 @@ class RatingList(BaseView):
 
         try:
             return await super(RatingList, self).create_item(
+                request.app.pool,
                 """ INSERT INTO ysr.rating (uid, mid, value)
                     VALUES ($1, $2, $3)
                     RETURNING id """, (uid, mid, value))
@@ -61,7 +62,7 @@ class RatingList(BaseView):
 
 
 class Rating(BaseView):
-    async def delete(self, _request, rid):
+    async def delete(self, request, rid):
         """Delete a single rating.
 
         Returns:
@@ -71,9 +72,10 @@ class Rating(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The rating does
                 not exist.
         """
-        return await super(Rating, self).delete_item('rating', rid)
+        return await super(Rating, self).delete_item(request.app.pool,
+                                                     'rating', rid)
 
-    async def get(self, _request, rid):
+    async def get(self, request, rid):
         """Get a single rating.
 
         Returns:
@@ -93,7 +95,8 @@ class Rating(BaseView):
             :class:`NotFound<sanic:sanic.exceptions.NotFound>`: The rating does
                 not exist.
         """
-        return await super(Rating, self).get_item('rating', rid)
+        return await super(Rating, self).get_item(request.app.pool, 'rating',
+                                                  rid)
 
     async def patch(self, request, rid):
         """Update a single rating.
@@ -126,9 +129,9 @@ class Rating(BaseView):
 
         value = self.get_field(request, 'value', default=current['value'])
 
-        conn = await asyncpg.connect(dsn=DATABASE_URL)
-        await conn.execute('UPDATE ysr.rating SET value=$1 WHERE id=$2', value,
-                           rid)
+        async with request.app.pool.acquire() as conn:
+            await conn.execute('UPDATE ysr.rating SET value=$1 WHERE id=$2',
+                               value, rid)
 
         return await self.get(request, rid)
 
