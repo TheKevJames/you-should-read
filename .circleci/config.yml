@@ -191,8 +191,8 @@ jobs:
       - deploy:
           name: deploy server image
           command: |
-            ssh -oStrictHostKeyChecking=no ubuntu@thekev.in "
-              docker service update --image thekevjames/you-should-read-server:${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:8} thekevjames_ysr_server
+            ssh -oStrictHostKeyChecking=no kevin@thekev.in "
+              sudo docker service update --image thekevjames/you-should-read-server:${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:8} thekevjames_ysr_server
             "
 
   github-release:
