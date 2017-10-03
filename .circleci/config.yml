@@ -149,8 +149,8 @@ jobs:
       - deploy:
           name: deploy client image
           command: |
-            ssh -oStrictHostKeyChecking=no ubuntu@thekev.in "
-              docker service update --image thekevjames/you-should-read-client:${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:8} thekevjames_ysr_client
+            ssh -oStrictHostKeyChecking=no kevin@thekev.in "
+              sudo docker service update --image thekevjames/you-should-read-client:${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:8} thekevjames_ysr_client
             "
 
   database-deploy:
