@@ -30,3 +30,10 @@ labels:
 collaborators:
   - username: larajanecka
     permission: push
+
+  - name: backlog
+    color: ededed
+  - name: in-progress
+    color: 0052cc
+  - name: in-review
+    color: 5319e7
