@@ -14,3 +14,4 @@ add_table_recommendation [updated_at_fn add_table_media add_table_user] 2017-08-
 increase_rating_value_precision [add_table_media add_table_rating add_table_recommendation] 2017-08-28T02:49:28Z Kevin James <kevin@atomicbox.local> # increase value precision
 cascade_on_updates [add_table_bookmark add_table_media_genre add_table_rating add_table_recommendation] 2017-08-28T03:46:01Z Kevin James <kevin@atomicbox.local> # set ON UPDATE CASCADE on fkeys
 prevent_self_recommendations [add_table_recommendation] 2017-08-28T04:13:59Z Kevin James <kevin@atomicbox.local> # ensure recommendation users are distinct
+add_computed_value_columns [add_table_rating] 2017-11-04T06:35:53Z Kevin James <kevin@atomicbox.local> # create store for computed rating information
