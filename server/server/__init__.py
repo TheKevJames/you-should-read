@@ -3,8 +3,8 @@ import os
 import asyncpg
 import sanic
 
-from .config import sentry
 from .bookmark import bookmark
+from .config import sentry
 from .genre import genre
 from .media import media
 from .rating import rating
