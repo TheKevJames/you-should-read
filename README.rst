@@ -32,4 +32,8 @@ the most recent version, run::
     cd database/
     sqitch deploy
 
+To fill your database with testset data, run::
+
+    psql -h localhost -U postgres postgres -f database/testset.sql
+
 .. _`sqitch`: http://sqitch.org/
