@@ -1,11 +1,9 @@
 version: 2
 
 jobs:
-  check:
+  lint:
     docker:
-      # https://github.com/docker-library/python/issues/155
-      # - image: python:3.6.2-alpine3.6
-      - image: python:3.6.2
+      - image: python:3.6.4
     steps:
       - checkout
       - run: python -m pip install pre-commit
@@ -108,11 +106,6 @@ jobs:
           command: |
             cd server/
             python -m pytest --cov=.
-      - run:
-          name: codecov
-          command: |
-            cd server/
-            codecov
 
   server-image:
     docker:
@@ -216,9 +209,9 @@ jobs:
 
 workflows:
   version: 2
-  check-build-and-deploy:
+  run-jobs:
     jobs:
-      - check:
+      - lint:
           filters:
             tags:
               only: /.*/
@@ -228,7 +221,7 @@ workflows:
             tags:
               only: /.*/
           requires:
-            - check
+            - lint
       - client-image:
           context: org-global
           filters:
@@ -252,7 +245,7 @@ workflows:
             tags:
               only: /.*/
           requires:
-            - check
+            - lint
       - database-deploy:
           context: org-global
           filters:
@@ -268,7 +261,7 @@ workflows:
             tags:
               only: /.*/
           requires:
-            - check
+            - lint
       - server-image:
           context: org-global
           filters:

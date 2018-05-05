@@ -1,14 +1,15 @@
 repository:
   name: you-should-read
-  description: Targeted recommendations from friends!
+  description: targeted recommendations from friends
   homepage: https://youshouldread.thekev.in
   private: false
 
   has_issues: true
   has_projects: false
   has_wiki: false
+  has_downloads: false
 
-  allow_merge_commit: true
+  allow_merge_commit: false
   allow_rebase_merge: true
   allow_squash_merge: true
 
