@@ -135,64 +135,6 @@ jobs:
               docker push thekevjames/you-should-read-server:latest
             fi
 
-  client-deploy:
-    docker:
-      - image: docker:17.05.0-ce-git
-    steps:
-      - deploy:
-          name: deploy client image
-          command: |
-            ssh -oStrictHostKeyChecking=no kevin@thekev.in "
-              sudo docker service update --image thekevjames/you-should-read-client:${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:8} thekevjames_ysr_client
-            "
-
-  database-deploy:
-    docker:
-      - image: debian:stretch-slim
-    steps:
-      - run:
-          name: install dependencies
-          command: |
-            # https://github.com/resin-io-library/base-images/issues/273
-            mkdir -p /usr/share/man/man1 /usr/share/man/man7
-            apt-get update -qy
-            apt-get install -qy apt-transport-https ca-certificates gnupg2 software-properties-common sqitch wget
-            wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
-      - run:
-          name: configure Heroku
-          command: |
-            cat > ~/.netrc << EOF
-            machine api.heroku.com
-              login ${HEROKU_USER}
-              password ${HEROKU_API_KEY}
-            EOF
-      - checkout
-      - run:
-          name: get database connection
-          command: |
-            echo "export DATABASE_URL=$(heroku pg:credentials:url --app you-should-read | tail -n1 | sed -E 's/[[:space:]]+postgres/pg/')" >> ${BASH_ENV}
-      - deploy:
-          name: apply migrations
-          command: |
-            cd database/
-            sqitch deploy --verify db:${DATABASE_URL}
-
-  server-deploy:
-    docker:
-      - image: docker:17.05.0-ce-git
-    steps:
-      - deploy:
-          name: deploy server image
-          command: |
-            ssh -oStrictHostKeyChecking=no kevin@thekev.in "
-              sudo docker service update --image thekevjames/you-should-read-server:${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:8} thekevjames_ysr_server
-            "
-      - deploy:
-          name: notify sentry of new release
-          command: |
-            apk add --no-cache curl curl-dev
-            curl -H 'Content-Type: application/json' -d '{"ref": "'"${CIRCLE_SHA1}"'", "version": "'"${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:8}"'"}' "${SENTRY_RELEASE_WEBHOOK}"
-
   github-release:
     docker:
       - image: python:3.6.2-alpine3.6
@@ -229,15 +171,6 @@ workflows:
               only: /.*/
           requires:
             - client-test
-      - client-deploy:
-          context: org-global
-          filters:
-            branches:
-              only: master
-            tags:
-              only: /.*/
-          requires:
-            - client-image
 
       - database:
           context: org-global
@@ -246,15 +179,6 @@ workflows:
               only: /.*/
           requires:
             - lint
-      - database-deploy:
-          context: org-global
-          filters:
-            branches:
-              only: master
-            tags:
-              only: /.*/
-          requires:
-            - database
 
       - server-test:
           filters:
@@ -269,15 +193,6 @@ workflows:
               only: /.*/
           requires:
             - server-test
-      - server-deploy:
-          context: org-global
-          filters:
-            branches:
-              only: master
-            tags:
-              only: /.*/
-          requires:
-            - server-image
 
       - github-release:
           context: org-global

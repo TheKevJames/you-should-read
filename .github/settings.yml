@@ -1,7 +1,6 @@
 repository:
   name: you-should-read
   description: targeted recommendations from friends
-  homepage: https://youshouldread.thekev.in
   private: false
 
   has_issues: true
